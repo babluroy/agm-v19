@@ -3,5 +3,6 @@
   "dest": "../../dist/drawing",
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  },
+  "allowedNonPeerDependencies": ["@babluroy/agm-core"]
 }

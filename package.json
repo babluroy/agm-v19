@@ -1,7 +1,8 @@
 {
-  "private": false,
-  "version": "4.0.0-beta.0",
+  "private": true,
+  "version": "4.0.0-beta.1",
   "description": "Angular components for Google Maps",
+  "name": "@babluroy/agm",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/babluroy/angular-google-maps-v2.git"
@@ -20,8 +21,12 @@
   "scripts": {
     "clean": "rimraf dist node_modules/@babluroy",
     "prebuild": "yarn clean",
-    "build": "ng build core && ng build markerclusterer && ng build snazzy-info-window && ng build drawing",
-    "build:prod": "ng build core --configuration production && ng build markerclusterer --configuration production && ng build snazzy-info-window --configuration production && ng build drawing --configuration production",
+    "build:core": "ng build core --configuration production",
+    "build:markerclusterer": "ng build markerclusterer --configuration production",
+    "build:snazzy": "ng build snazzy-info-window --configuration production",
+    "build:drawing": "ng build drawing --configuration production",
+    "build": "yarn build:core && yarn build:markerclusterer && yarn build:snazzy && yarn build:drawing",
+    "build:prod": "yarn build:core && yarn build:markerclusterer && yarn build:snazzy && yarn build:drawing",
     "lint": "ng lint",
     "test": "jest",
     "test:watch": "jest --watchAll",
@@ -30,10 +35,10 @@
     "docs:hugo": "cd docs && hugo",
     "docs:injectga": "node scripts/inject-google-analytics.js",
     "docs": "yarn docs:hugo && yarn apidocs:core && yarn apidocs:snazzy && yarn apidocs:markerclusterer && yarn apidocs:drawing",
-    "apidocs:core": "compodoc -p packages/core/tsconfig.lib.json --name @babluroy/core --output docs/public/api-docs/babluroy-core/  --hideGenerator --disableCoverage",
-    "apidocs:snazzy": "compodoc -p packages/snazzy-info-window/tsconfig.lib.json --name @babluroy/snazzy-info-window  --output docs/public/api-docs/babluroy-snazzy-info-window/ --hideGenerator --disableCoverage",
-    "apidocs:markerclusterer": "compodoc -p packages/markerclusterer/tsconfig.lib.json --name @babluroy/markerclusterer  --output docs/public/api-docs/babluroy-markerclusterer/ --hideGenerator --disableCoverage",
-    "apidocs:drawing": "compodoc -p packages/drawing/tsconfig.lib.json --name @babluroy/drawing  --output docs/public/api-docs/babluroy-drawing/ --hideGenerator --disableCoverage"
+    "apidocs:core": "compodoc -p packages/core/tsconfig.lib.json --name @babluroy/agm-core --output docs/public/api-docs/babluroy-agm-core/  --hideGenerator --disableCoverage",
+    "apidocs:snazzy": "compodoc -p packages/snazzy-info-window/tsconfig.lib.json --name @babluroy/agm-snazzy-info-window  --output docs/public/api-docs/babluroy-agm-snazzy-info-window/ --hideGenerator --disableCoverage",
+    "apidocs:markerclusterer": "compodoc -p packages/markerclusterer/tsconfig.lib.json --name @babluroy/agm-markerclusterer  --output docs/public/api-docs/babluroy-agm-markerclusterer/ --hideGenerator --disableCoverage",
+    "apidocs:drawing": "compodoc -p packages/drawing/tsconfig.lib.json --name @babluroy/agm-drawing  --output docs/public/api-docs/babluroy-agm-drawing/ --hideGenerator --disableCoverage"
   },
   "author": "Sebastian Holstein <info@sebastian-holstein.de>",
   "license": "MIT",
@@ -71,6 +76,5 @@
     "tslint": "~6.1.0",
     "typescript": "~4.9.5",
     "yarn": "^1.22.19"
-  },
-  "name": "@babluroy/core"
+  }
 }

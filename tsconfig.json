@@ -18,21 +18,23 @@
       "dom"
     ],
     "paths": {
-      "@babluroy/core": [
-        "dist/core",
-        "packages/core/src/public_api"
+      "@babluroy/agm-core": [
+        "dist/core"
       ],
-      "@babluroy/markerclusterer": [
+      "@babluroy/agm-core/*": [
+        "dist/core/*"
+      ],
+      "@babluroy/agm-markerclusterer": [
         "dist/markerclusterer",
-        "packages/markerclusterer/src/public_api"
+        "packages/markerclusterer/src/public-api"
       ],
-      "@babluroy/snazzy-info-window": [
+      "@babluroy/agm-snazzy-info-window": [
         "dist/snazzy-info-window",
-        "packages/snazzy-info-window/src/public_api"
+        "packages/snazzy-info-window/src/public-api"
       ],
-      "@babluroy/drawing": [
+      "@babluroy/agm-drawing": [
         "dist/drawing",
-        "packages/drawing/src/public_api"
+        "packages/drawing/src/public-api"
       ]
     },
     "types": [

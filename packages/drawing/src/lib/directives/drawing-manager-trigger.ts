@@ -1,5 +1,5 @@
-import { AgmMap } from '@babluroy/core';
-import { Directive, Host, Input, OnDestroy, OnInit } from '@angular/core';
+import { AgmMap } from '@babluroy/agm-core';
+import { Directive, Host, Input, OnDestroy, OnInit, Inject } from '@angular/core';
 
 @Directive({
   selector: 'agm-drawing-manager-trigger',
@@ -10,7 +10,7 @@ export class AgmDrawingManagerTrigger implements OnInit, OnDestroy {
 
   private _drawingManager: google.maps.drawing.DrawingManager | null = null;
 
-  constructor(@Host() private _agmMap: AgmMap) {}
+  constructor(@Host() @Inject(AgmMap) private _agmMap: AgmMap) {}
 
   ngOnInit() {
     this._agmMap.mapReady.subscribe((map) => {

@@ -1,6 +1,6 @@
 {
-  "name": "@babluroy/drawing",
-  "version": "3.0.0-beta.1",
+  "name": "@babluroy/agm-drawing",
+  "version": "4.0.0-beta.1",
   "description": "Angular Google Maps (AGM) extension for google maps drawing library",
   "author": "Feliks Khantsis",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "map-drawing"
   ],
   "peerDependencies": {
-    "@babluroy/core": "4.0.0-beta.1",
+    "@babluroy/agm-core": "4.0.0-beta.1",
     "@angular/common": "^15.2.9",
     "@angular/core": "^15.2.9"
   },
