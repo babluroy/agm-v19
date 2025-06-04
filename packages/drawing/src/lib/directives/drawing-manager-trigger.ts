@@ -1,4 +1,4 @@
-import { AgmMap } from '@agm-roy/core';
+import { AgmMap } from '@babluroy/core';
 import { Directive, Host, Input, OnDestroy, OnInit } from '@angular/core';
 
 @Directive({

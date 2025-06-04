@@ -1,4 +1,4 @@
-import { AgmMarker, GoogleMapsAPIWrapper, MarkerManager } from '@agm/core';
+import { AgmMarker, GoogleMapsAPIWrapper, MarkerManager } from '@babluroy/core';
 import { Injectable, NgZone } from '@angular/core';
 import { MarkerClustererOptions } from '@google/markerclustererplus';
 import MarkerClusterer from '@google/markerclustererplus';
@@ -9,6 +9,7 @@ import { AgmMarkerCluster } from '../../directives/marker-cluster';
 export class ClusterManager extends MarkerManager {
   private _clustererInstance: Promise<MarkerClusterer>;
   private _resolver: (cluster: MarkerClusterer) => void;
+  protected _markers: Map<AgmMarker, Promise<google.maps.Marker>> = new Map<AgmMarker, Promise<google.maps.Marker>>();
 
   constructor(protected _mapsWrapper: GoogleMapsAPIWrapper, protected _zone: NgZone) {
     super(_mapsWrapper, _zone);
