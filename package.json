@@ -1,8 +1,8 @@
 {
-  "private": true,
+  "private": false,
   "version": "4.0.0-beta.1",
   "description": "Angular components for Google Maps",
-  "name": "@babluroy/agm",
+  "name": "@babluroy/agm-core",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/babluroy/angular-google-maps-v2.git"
