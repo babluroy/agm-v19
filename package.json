@@ -4,7 +4,7 @@
   "description": "Angular components for Google Maps",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SebastianM/angular-google-maps.git"
+    "url": "git+https://github.com/babluroy/angular-google-maps-v2.git"
   },
   "keywords": [
     "angular",
@@ -71,5 +71,6 @@
     "tslint": "~6.1.0",
     "typescript": "~4.9.5",
     "yarn": "^1.22.19"
-  }
+  },
+  "name": ""
 }
