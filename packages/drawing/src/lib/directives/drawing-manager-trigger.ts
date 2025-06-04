@@ -1,26 +1,27 @@
-import { AgmMap } from '@agm/core';
-import { AfterViewInit, Directive, Host, Input, OnDestroy } from '@angular/core';
-import { first } from 'rxjs/operators';
-import { AgmDrawingManager } from './drawing-manager';
+import { AgmMap } from '@agm-roy/core';
+import { Directive, Host, Input, OnDestroy, OnInit } from '@angular/core';
 
 @Directive({
-  selector: 'agm-map[agmDrawingManager]',
-  exportAs: 'matDrawingManagerTrigger',
+  selector: 'agm-drawing-manager-trigger',
 })
-export class AgmDrawingManagerTrigger implements AfterViewInit, OnDestroy{
+export class AgmDrawingManagerTrigger implements OnInit, OnDestroy {
+  @Input() drawingMode: google.maps.drawing.OverlayType | null = null;
+  @Input() options: google.maps.drawing.DrawingManagerOptions = {};
 
-  /** The drawing manager to be attached to this trigger. */
-  // tslint:disable-next-line: no-input-rename
-  @Input('agmDrawingManager') drawingManager: AgmDrawingManager;
+  private _drawingManager: google.maps.drawing.DrawingManager | null = null;
 
-  constructor(@Host() private _agmMap: AgmMap) {
-  }
+  constructor(@Host() private _agmMap: AgmMap) {}
 
-  ngAfterViewInit(): void {
-    this._agmMap.mapReady.pipe(first()).subscribe(map => this.drawingManager.setMap(map));
+  ngOnInit() {
+    this._agmMap.mapReady.subscribe((map) => {
+      this._drawingManager = new google.maps.drawing.DrawingManager(this.options);
+      this._drawingManager.setMap(map);
+    });
   }
 
   ngOnDestroy() {
-    this._agmMap.mapReady.pipe(first()).subscribe(() => this.drawingManager.setMap(null));
+    if (this._drawingManager) {
+      this._drawingManager.setMap(null);
+    }
   }
 }

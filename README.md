@@ -10,7 +10,7 @@ Angular components for Google Maps. (Previously known as angular2-google-maps)
 
 ---
 
-[![Build Status](https://travis-ci.org/SebastianM/angular-google-maps.svg?branch=master)](https://travis-ci.org/SebastianM/angular-google-maps) [![Questions?: join the chat](https://img.shields.io/badge/questions%3F-join%20the%20chat-blue.svg)](https://discord.gg/XAr2ACE) [![npm version](https://badge.fury.io/js/%40agm%2Fcore.svg)](https://www.npmjs.com/package/@agm/core) ![supported angular versions: 9+](https://img.shields.io/badge/supported%20angular%20versions-9.1+-green.svg)
+[![Build Status](https://travis-ci.org/SebastianM/angular-google-maps.svg?branch=master)](https://travis-ci.org/SebastianM/angular-google-maps) [![Questions?: join the chat](https://img.shields.io/badge/questions%3F-join%20the%20chat-blue.svg)](https://discord.gg/XAr2ACE) [![npm version](https://badge.fury.io/js/%40agm-roy%2Fcore.svg)](https://www.npmjs.com/package/@agm-roy/core) ![supported angular versions: 9+](https://img.shields.io/badge/supported%20angular%20versions-9.1+-green.svg)
 
 ---
 
@@ -20,10 +20,10 @@ This project is a mono repo and hosts multiple packages:
 
 | Package                  | Downloads                                                                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| @agm/core                | [![@agm/core](https://img.shields.io/npm/dm/@agm/core.svg)](https://www.npmjs.com/package/@agm/core)                                              |
-| @agm/snazzy-info-window  | [![@agm/snazzy-info-window](https://img.shields.io/npm/dm/@agm/snazzy-info-window.svg)](https://www.npmjs.com/package/@agm/snazzy-info-window)    |
-| @agm/markerclusterer | [![@agm/markerclusterer](https://img.shields.io/npm/dm/@agm/markerclusterer.svg)](https://www.npmjs.com/package/@agm/markerclusterer) |
-| @agm/drawing | [![@agm/drawing](https://img.shields.io/npm/dm/@agm/drawing.svg)](https://www.npmjs.com/package/@agm/drawing) |
+| @agm-roy/core                | [![@agm-roy/core](https://img.shields.io/npm/dm/@agm-roy/core.svg)](https://www.npmjs.com/package/@agm-roy/core)                                              |
+| @agm-roy/snazzy-info-window  | [![@agm-roy/snazzy-info-window](https://img.shields.io/npm/dm/@agm-roy/snazzy-info-window.svg)](https://www.npmjs.com/package/@agm-roy/snazzy-info-window)    |
+| @agm-roy/markerclusterer | [![@agm-roy/markerclusterer](https://img.shields.io/npm/dm/@agm-roy/markerclusterer.svg)](https://www.npmjs.com/package/@agm-roy/markerclusterer) |
+| @agm-roy/drawing | [![@agm-roy/drawing](https://img.shields.io/npm/dm/@agm-roy/drawing.svg)](https://www.npmjs.com/package/@agm-roy/drawing) |
 
 ---
 
@@ -39,7 +39,7 @@ If you just want to play with AGM and don't want to set up a full project, you c
 You can install the package with the following command:
 
 ```shell
-npm install @agm/core
+npm install @agm-roy/core
 ```
 
 You should also checkout the [Getting started](https://angular-maps.com/guides/getting-started/) guide for further information.
