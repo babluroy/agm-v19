@@ -52,8 +52,8 @@ export class PolylineManager {
         }
       });
       if (icon.icon && !icon.icon.anchor) {
-        delete icon.icon.anchor;
-      }
+          delete icon.icon.anchor;
+        }
     });
     return icons;
   }
@@ -63,17 +63,17 @@ export class PolylineManager {
     const path = PolylineManager._convertPoints(line);
     const icons = PolylineManager._convertIcons(line);
     const polylinePromise = this._mapsWrapper.createPolyline({
-      clickable: line.clickable,
-      draggable: line.draggable,
-      editable: line.editable,
-      geodesic: line.geodesic,
-      strokeColor: line.strokeColor,
-      strokeOpacity: line.strokeOpacity,
-      strokeWeight: line.strokeWeight,
-      visible: line.visible,
-      zIndex: line.zIndex,
-      path,
-      icons,
+        clickable: line.clickable,
+        draggable: line.draggable,
+        editable: line.editable,
+        geodesic: line.geodesic,
+        strokeColor: line.strokeColor,
+        strokeOpacity: line.strokeOpacity,
+        strokeWeight: line.strokeWeight,
+        visible: line.visible,
+        zIndex: line.zIndex,
+        path,
+        icons,
     });
     this._polylines.set(line, polylinePromise);
     return polylinePromise;

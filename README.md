@@ -20,12 +20,12 @@ Angular Google Maps (AGM) is a set of Angular components for Google Maps. This v
 
 ```bash
 # Install the core package
-npm install @babluroy/agm-core@4.0.0-beta.8
+npm install @babluroy/agm-core@4.0.0-beta.9
 
 # Optional packages
-npm install @babluroy/agm-markerclusterer@4.0.0-beta.8
-npm install @babluroy/agm-snazzy-info-window@4.0.0-beta.8
-npm install @babluroy/agm-drawing@4.0.0-beta.8
+npm install @babluroy/agm-markerclusterer@4.0.0-beta.9
+npm install @babluroy/agm-snazzy-info-window@4.0.0-beta.9
+npm install @babluroy/agm-drawing@4.0.0-beta.9
 ```
 
 ## Quick Start

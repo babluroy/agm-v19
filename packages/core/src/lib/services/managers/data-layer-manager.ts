@@ -56,16 +56,16 @@ export class DataLayerManager {
   setDataOptions(layer: AgmDataLayer, options: google.maps.Data.DataOptions) {
     this._layers.get(layer)!.then(l => {
       if (options.controlPosition) {
-        l.setControlPosition(options.controlPosition);
+      l.setControlPosition(options.controlPosition);
       }
       if (options.controls) {
-        l.setControls(options.controls);
+      l.setControls(options.controls);
       }
       if (options.drawingMode) {
-        l.setDrawingMode(options.drawingMode);
+      l.setDrawingMode(options.drawingMode);
       }
       if (options.style) {
-        l.setStyle(options.style);
+      l.setStyle(options.style);
       }
     });
   }
@@ -106,6 +106,6 @@ export class DataLayerManager {
   loadGeoJson(layer: AgmDataLayer, url: string, options?: google.maps.Data.GeoJsonOptions): void {
     this._layers.get(layer)!.then((d: google.maps.Data) => {
       d.loadGeoJson(url, options);
-    });
+      });
   }
 }

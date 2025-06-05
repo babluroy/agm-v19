@@ -4,9 +4,14 @@ import { AgmDrawingManager } from './directives/drawing-manager';
 import { AgmDrawingManagerTrigger } from './directives/drawing-manager-trigger';
 
 @NgModule({
-  imports: [AgmCoreModule, AgmDrawingManager, AgmDrawingManagerTrigger],
-  declarations: [],
-  exports: [],
+  imports: [
+    AgmCoreModule,
+    AgmDrawingManager,
+    AgmDrawingManagerTrigger
+  ],
+  exports: [
+    AgmDrawingManager,
+    AgmDrawingManagerTrigger
+  ]
 })
-export class AgmDrawingModule {
-}
+export class AgmDrawingModule { }
