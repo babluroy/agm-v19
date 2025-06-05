@@ -1,6 +1,6 @@
 import { AgmMarker, GoogleMapsAPIWrapper } from '@babluroy/agm-core';
 import { NgZone } from '@angular/core';
-import { async, inject, TestBed } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import MarkerClusterer from '@google/markerclustererplus';
 import { AgmMarkerCluster } from '../../directives/marker-cluster';
 import { ClusterManager } from './cluster-manager';
@@ -13,7 +13,13 @@ describe('ClusterManager', () => {
         ClusterManager, {
           provide: GoogleMapsAPIWrapper,
           useValue: {
-            createMarker: jest.fn(),
+            createMarker: jest.fn().mockImplementation(() => Promise.resolve({
+              setMap: jest.fn(),
+              setIcon: jest.fn(),
+              setOpacity: jest.fn(),
+              setVisible: jest.fn(),
+              setZIndex: jest.fn(),
+            })),
           },
         },
       ],
@@ -24,22 +30,22 @@ describe('ClusterManager', () => {
     it('should call the mapsApiWrapper when creating a new marker',
        inject(
            [ClusterManager, GoogleMapsAPIWrapper],
-           (clusterManager: ClusterManager, apiWrapper: GoogleMapsAPIWrapper) => {
+           async (clusterManager: ClusterManager, apiWrapper: GoogleMapsAPIWrapper) => {
              const newMarker = new AgmMarker(clusterManager);
              newMarker.latitude = 34.4;
              newMarker.longitude = 22.3;
              newMarker.label = 'A';
-             clusterManager.addMarker(newMarker);
+             await clusterManager.addMarker(newMarker);
 
              expect(apiWrapper.createMarker).toHaveBeenCalledWith({
                position: {lat: 34.4, lng: 22.3},
                label: 'A',
                draggable: false,
-               icon: undefined,
+               icon: '',
                opacity: 1,
                visible: true,
-               zIndex: 1,
-               title: undefined,
+               zIndex: 0,
+               title: '',
                clickable: true,
              }, false);
            }));
@@ -68,9 +74,9 @@ describe('ClusterManager', () => {
 
   describe('set marker icon', () => {
     it('should update that marker via setIcon method when the markerUrl changes',
-       async(inject(
+       inject(
            [ClusterManager, GoogleMapsAPIWrapper],
-           (markerManager: ClusterManager, apiWrapper: GoogleMapsAPIWrapper) => {
+           async (markerManager: ClusterManager, apiWrapper: GoogleMapsAPIWrapper) => {
              const newMarker = new AgmMarker(markerManager);
              newMarker.latitude = 34.4;
              newMarker.longitude = 22.3;
@@ -87,25 +93,25 @@ describe('ClusterManager', () => {
                position: {lat: 34.4, lng: 22.3},
                label: 'A',
                draggable: false,
-               icon: undefined,
+               icon: '',
                opacity: 1,
                visible: true,
-               zIndex: 1,
-               title: undefined,
+               zIndex: 0,
+               title: '',
                clickable: true,
              }, false);
              const iconUrl = 'http://angular-maps.com/icon.png';
              newMarker.iconUrl = iconUrl;
-             return markerManager.updateIcon(newMarker).then(
-                 () => { expect(markerInstance.setIcon).toHaveBeenCalledWith(iconUrl); });
-           })));
+             await markerManager.updateIcon(newMarker);
+             expect(markerInstance.setIcon).toHaveBeenCalledWith(iconUrl);
+           }));
   });
 
   describe('set marker opacity', () => {
     it('should update that marker via setOpacity method when the markerOpacity changes',
-       async(inject(
+       inject(
            [ClusterManager, GoogleMapsAPIWrapper],
-           (markerManager: ClusterManager, apiWrapper: GoogleMapsAPIWrapper) => {
+           async (markerManager: ClusterManager, apiWrapper: GoogleMapsAPIWrapper) => {
              const newMarker = new AgmMarker(markerManager);
              newMarker.latitude = 34.4;
              newMarker.longitude = 22.3;
@@ -122,25 +128,25 @@ describe('ClusterManager', () => {
                position: {lat: 34.4, lng: 22.3},
                label: 'A',
                draggable: false,
-               icon: undefined,
+               icon: '',
                visible: true,
                opacity: 1,
-               zIndex: 1,
-               title: undefined,
+               zIndex: 0,
+               title: '',
                clickable: true,
              }, false);
              const opacity = 0.4;
              newMarker.opacity = opacity;
-             return markerManager.updateOpacity(newMarker).then(
-                 () => { expect(markerInstance.setOpacity).toHaveBeenCalledWith(opacity); });
-           })));
+             await markerManager.updateOpacity(newMarker);
+             expect(markerInstance.setOpacity).toHaveBeenCalledWith(opacity);
+           }));
   });
 
   describe('set visible option', () => {
     it('should update that marker via setVisible method when the visible changes',
-       async(inject(
+       inject(
            [ClusterManager, GoogleMapsAPIWrapper],
-           (markerManager: ClusterManager, apiWrapper: GoogleMapsAPIWrapper) => {
+           async (markerManager: ClusterManager, apiWrapper: GoogleMapsAPIWrapper) => {
              const newMarker = new AgmMarker(markerManager);
              newMarker.latitude = 34.4;
              newMarker.longitude = 22.3;
@@ -158,24 +164,24 @@ describe('ClusterManager', () => {
                position: {lat: 34.4, lng: 22.3},
                label: 'A',
                draggable: false,
-               icon: undefined,
+               icon: '',
                visible: false,
                opacity: 1,
-               zIndex: 1,
-               title: undefined,
+               zIndex: 0,
+               title: '',
                clickable: true,
              }, false);
              newMarker.visible = true;
-             return markerManager.updateVisible(newMarker).then(
-                 () => { expect(markerInstance.setVisible).toHaveBeenCalledWith(true); });
-           })));
+             await markerManager.updateVisible(newMarker);
+             expect(markerInstance.setVisible).toHaveBeenCalledWith(true);
+           }));
   });
 
   describe('set zIndex option', () => {
     it('should update that marker via setZIndex method when the zIndex changes',
-       async(inject(
+       inject(
            [ClusterManager, GoogleMapsAPIWrapper],
-           (markerManager: ClusterManager, apiWrapper: GoogleMapsAPIWrapper) => {
+           async (markerManager: ClusterManager, apiWrapper: GoogleMapsAPIWrapper) => {
              const newMarker = new AgmMarker(markerManager);
              newMarker.latitude = 34.4;
              newMarker.longitude = 22.3;
@@ -193,18 +199,17 @@ describe('ClusterManager', () => {
                position: {lat: 34.4, lng: 22.3},
                label: 'A',
                draggable: false,
-               icon: undefined,
+               icon: '',
                visible: false,
                opacity: 1,
-               zIndex: 1,
-               title: undefined,
+               zIndex: 0,
+               title: '',
                clickable: true,
              }, false);
-             const zIndex = 10;
-             newMarker.zIndex = zIndex;
-             return markerManager.updateZIndex(newMarker).then(
-                 () => { expect(markerInstance.setZIndex).toHaveBeenCalledWith(zIndex); });
-           })));
+             newMarker.zIndex = 2;
+             await markerManager.updateZIndex(newMarker);
+             expect(markerInstance.setZIndex).toHaveBeenCalledWith(2);
+           }));
   });
 
   describe('set calculator', () => {
@@ -222,7 +227,7 @@ describe('ClusterManager', () => {
           const markerCluster: Partial<AgmMarkerCluster> = {};
 
           // negative case
-          markerCluster.calculator = null;
+          markerCluster.calculator = undefined;
           markerManager.setCalculator(markerCluster as AgmMarkerCluster);
           await instancePromise;
           expect(mockClusterer.setCalculator).not.toHaveBeenCalled();

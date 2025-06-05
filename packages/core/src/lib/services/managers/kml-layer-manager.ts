@@ -33,11 +33,11 @@ export class KmlLayerManager {
   }
 
   setOptions(layer: AgmKmlLayer, options: google.maps.KmlLayerOptions) {
-    this._layers.get(layer).then(l => l.setOptions(options));
+    this._layers.get(layer)?.then(l => l.setOptions(options));
   }
 
   deleteKmlLayer(layer: AgmKmlLayer) {
-    this._layers.get(layer).then(l => {
+    this._layers.get(layer)?.then(l => {
       l.setMap(null);
       this._layers.delete(layer);
     });
@@ -48,7 +48,7 @@ export class KmlLayerManager {
    */
   createEventObservable<T>(eventName: string, layer: AgmKmlLayer): Observable<T> {
     return new Observable((observer: Observer<T>) => {
-      this._layers.get(layer).then((m: google.maps.KmlLayer) => {
+      this._layers.get(layer)?.then((m: google.maps.KmlLayer) => {
         m.addListener(eventName, (e: T) => this._zone.run(() => observer.next(e)));
       });
     });

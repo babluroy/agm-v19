@@ -7,6 +7,7 @@ let layerId = 0;
 
 @Directive({
   selector: 'agm-kml-layer',
+  standalone: true,
 })
 export class AgmKmlLayer implements OnInit, OnDestroy, OnChanges {
   private _addedToManager = false;
@@ -41,12 +42,12 @@ export class AgmKmlLayer implements OnInit, OnDestroy, OnChanges {
   /**
    * The URL of the KML document to display.
    */
-  @Input() url: string = null;
+  @Input() url: string = '';
 
   /**
    * The z-index of the layer.
    */
-  @Input() zIndex: number | null = null;
+  @Input() zIndex: number = 0;
 
   /**
    * This event is fired when a feature in the layer is clicked.
@@ -97,12 +98,26 @@ export class AgmKmlLayer implements OnInit, OnDestroy, OnChanges {
 
   private _addEventListeners() {
     const listeners = [
-      {name: 'click', handler: (ev: google.maps.KmlMouseEvent) => this.layerClick.emit(ev)},
-      {name: 'defaultviewport_changed', handler: () => this.defaultViewportChange.emit()},
-      {name: 'status_changed', handler: () => this.statusChange.emit()},
+      {
+        name: 'click',
+        handler: (ev: google.maps.KmlMouseEvent | void) => {
+          if (ev) {
+            this.layerClick.emit(ev);
+          }
+        }
+      },
+      {
+        name: 'defaultviewport_changed',
+        handler: () => this.defaultViewportChange.emit()
+      },
+      {
+        name: 'status_changed',
+        handler: () => this.statusChange.emit()
+      },
     ];
     listeners.forEach((obj) => {
-      const os = this._manager.createEventObservable(obj.name, this).subscribe(obj.handler);
+      const os = this._manager.createEventObservable<google.maps.KmlMouseEvent | void>(obj.name, this)
+        .subscribe(obj.handler);
       this._subscriptions.push(os);
     });
   }

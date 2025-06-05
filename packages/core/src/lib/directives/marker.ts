@@ -31,6 +31,7 @@ let markerId = 0;
  */
 @Directive({
   selector: 'agm-marker',
+  standalone: true,
   providers: [
     { provide: FitBoundsAccessor, useExisting: forwardRef(() => AgmMarker) },
   ],
@@ -39,38 +40,37 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
   /**
    * The latitude position of the marker.
    */
-  @Input() latitude: number;
+  @Input() latitude: number = 0;
 
   /**
    * The longitude position of the marker.
    */
-  @Input() longitude: number;
+  @Input() longitude: number = 0;
 
   /**
    * The title of the marker.
    */
-  @Input() title: string;
+  @Input() title: string = '';
 
   /**
    * The label (a single uppercase character) for the marker.
    */
-  @Input() label: string | google.maps.MarkerLabel;
+  @Input() label: string | google.maps.MarkerLabel = '';
 
   /**
    * If true, the marker can be dragged. Default value is false.
    */
-  // tslint:disable-next-line:no-input-rename
-  @Input('markerDraggable') draggable = false;
+  @Input() draggable: boolean = false;
 
   /**
    * Icon (the URL of the image) for the foreground.
    */
-  @Input() iconUrl: string | google.maps.Icon | google.maps.Symbol;
+  @Input() iconUrl: string = '';
 
   /**
    * If true, the marker is visible
    */
-  @Input() visible = true;
+  @Input() visible: boolean = true;
 
   /**
    * Whether to automatically open the child info window when the marker is clicked.
@@ -80,7 +80,7 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
   /**
    * The marker's opacity between 0.0 and 1.0.
    */
-  @Input() opacity = 1;
+  @Input() opacity: number = 1;
 
   /**
    * All markers are displayed on the map in order of their zIndex, with higher values displaying in
@@ -88,19 +88,18 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
    * vertical position on screen, with lower markers appearing in front of markers further up the
    * screen.
    */
-  @Input() zIndex = 1;
+  @Input() zIndex: number = 0;
 
   /**
    * If true, the marker can be clicked. Default value is true.
    */
-  // tslint:disable-next-line:no-input-rename
-  @Input('markerClickable') clickable = true;
+  @Input() clickable: boolean = true;
 
   /**
    * Which animation to play when marker is added to a map.
    * This can be 'BOUNCE' or 'DROP'
    */
-  @Input() animation: keyof typeof google.maps.Animation;
+  @Input() animation: keyof typeof google.maps.Animation | null = null;
 
   /**
    * This event is fired when the marker's animation property changes.
@@ -125,35 +124,35 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
   /**
    * This event is fired when the user starts dragging the marker.
    */
-  @Output() dragStart: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() dragStart: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is repeatedly fired while the user drags the marker.
    */
   // tslint:disable-next-line: no-output-native
-  @Output() drag: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() drag: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user stops dragging the marker.
    */
-  @Output() dragEnd: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() dragEnd: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user mouses over the marker.
    */
-  @Output() mouseOver: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() mouseOver: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user mouses outside the marker.
    */
-  @Output() mouseOut: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() mouseOut: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /** @internal */
   @ContentChildren(AgmInfoWindow) infoWindow: QueryList<AgmInfoWindow> = new QueryList<AgmInfoWindow>();
 
   private _markerAddedToManger = false;
   private _id: string;
-  private _observableSubscriptions: Subscription[] = [];
+  private _eventSubscriptions: Subscription[] = [];
 
   protected readonly _fitBoundsDetails$: ReplaySubject<FitBoundsDetails> = new ReplaySubject<FitBoundsDetails>(1);
 
@@ -244,49 +243,49 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
       }
       this.markerClick.emit(this);
     });
-    this._observableSubscriptions.push(cs);
+    this._eventSubscriptions.push(cs);
 
     const dcs = this._markerManager.createEventObservable('dblclick', this).subscribe(() => {
-      this.markerDblClick.emit(null);
+      this.markerDblClick.emit();
     });
-    this._observableSubscriptions.push(dcs);
+    this._eventSubscriptions.push(dcs);
 
     const rc = this._markerManager.createEventObservable('rightclick', this).subscribe(() => {
-      this.markerRightClick.emit(null);
+      this.markerRightClick.emit();
     });
-    this._observableSubscriptions.push(rc);
+    this._eventSubscriptions.push(rc);
 
     const ds =
-        this._markerManager.createEventObservable<google.maps.MouseEvent>('dragstart', this)
+        this._markerManager.createEventObservable<google.maps.MapMouseEvent>('dragstart', this)
             .subscribe(e => this.dragStart.emit(e));
-    this._observableSubscriptions.push(ds);
+    this._eventSubscriptions.push(ds);
 
     const d =
-        this._markerManager.createEventObservable<google.maps.MouseEvent>('drag', this)
+        this._markerManager.createEventObservable<google.maps.MapMouseEvent>('drag', this)
           .subscribe(e => this.drag.emit(e));
-    this._observableSubscriptions.push(d);
+    this._eventSubscriptions.push(d);
 
     const de =
-        this._markerManager.createEventObservable<google.maps.MouseEvent>('dragend', this)
+        this._markerManager.createEventObservable<google.maps.MapMouseEvent>('dragend', this)
           .subscribe(e => this.dragEnd.emit(e));
-    this._observableSubscriptions.push(de);
+    this._eventSubscriptions.push(de);
 
     const mover =
-        this._markerManager.createEventObservable<google.maps.MouseEvent>('mouseover', this)
+        this._markerManager.createEventObservable<google.maps.MapMouseEvent>('mouseover', this)
           .subscribe(e => this.mouseOver.emit(e));
-    this._observableSubscriptions.push(mover);
+    this._eventSubscriptions.push(mover);
 
     const mout =
-        this._markerManager.createEventObservable<google.maps.MouseEvent>('mouseout', this)
+        this._markerManager.createEventObservable<google.maps.MapMouseEvent>('mouseout', this)
           .subscribe(e => this.mouseOut.emit(e));
-    this._observableSubscriptions.push(mout);
+    this._eventSubscriptions.push(mout);
 
     const anChng =
       this._markerManager.createEventObservable<void>('animation_changed', this)
         .subscribe(() => {
-          this.animationChange.emit(this.animation);
+          this.animationChange.emit(this.animation ?? undefined);
         });
-    this._observableSubscriptions.push(anChng);
+    this._eventSubscriptions.push(anChng);
   }
 
   /** @internal */
@@ -299,6 +298,6 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
   ngOnDestroy() {
     this._markerManager.deleteMarker(this);
     // unsubscribe all registered observable subscriptions
-    this._observableSubscriptions.forEach((s) => s.unsubscribe());
+    this._eventSubscriptions.forEach((s) => s.unsubscribe());
   }
 }

@@ -197,10 +197,9 @@ let layerId = 0;
  */
 @Directive({
   selector: 'agm-data-layer',
+  standalone: true,
 })
 export class AgmDataLayer implements OnInit, OnDestroy, OnChanges {
-  private static _dataOptionsAttributes = ['style'];
-
   private _addedToManager = false;
   private _id: string = (layerId++).toString();
   private _subscriptions: Subscription[] = [];
@@ -218,7 +217,7 @@ export class AgmDataLayer implements OnInit, OnDestroy, OnChanges {
   /**
    * The layer's style function.
    */
-  @Input() style: (param: google.maps.Data.Feature) => google.maps.Data.StyleOptions;
+  @Input() style!: (param: google.maps.Data.Feature) => google.maps.Data.StyleOptions;
 
   constructor(private _manager: DataLayerManager) { }
 
@@ -236,7 +235,7 @@ export class AgmDataLayer implements OnInit, OnDestroy, OnChanges {
       { name: 'click', handler: (ev: google.maps.Data.MouseEvent) => this.layerClick.emit(ev) },
     ];
     listeners.forEach((obj) => {
-      const os = this._manager.createEventObservable(obj.name, this).subscribe(obj.handler);
+      const os = this._manager.createEventObservable(obj.name, this).subscribe((ev: any) => obj.handler(ev as google.maps.Data.MouseEvent));
       this._subscriptions.push(os);
     });
   }
@@ -255,20 +254,18 @@ export class AgmDataLayer implements OnInit, OnDestroy, OnChanges {
   }
 
   /** @internal */
-  ngOnChanges(changes: SimpleChanges) {
-    if (!this._addedToManager) {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this._manager) {
       return;
     }
-
-    // tslint:disable-next-line: no-string-literal
-    const geoJsonChange = changes['geoJson'];
-    if (geoJsonChange) {
-      this._manager.updateGeoJson(this, geoJsonChange.currentValue);
-    }
-
-    const dataOptions = AgmDataLayer._dataOptionsAttributes.reduce<google.maps.Data.DataOptions>((options, k) =>
-      options[k] = changes.hasOwnProperty(k) ? changes[k].currentValue : (this as any)[k], {});
-
-    this._manager.setDataOptions(this, dataOptions);
+    // Fetch the map instance asynchronously and set DataOptions
+    (this._manager as any)._wrapper.getNativeMap().then((map: google.maps.Map) => {
+      const dataOptions: google.maps.Data.DataOptions = {
+        map,
+        ...('style' in changes ? { style: this.style } : {}),
+        // Add other DataOptions properties as needed
+      };
+      this._manager.setDataOptions(this, dataOptions);
+    });
   }
 }

@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { AgmSnazzyInfoWindow } from './directives/snazzy-info-window';
 
 @NgModule({
-  declarations: [AgmSnazzyInfoWindow],
-  exports: [AgmSnazzyInfoWindow],
+  imports: [AgmSnazzyInfoWindow],
+  declarations: [],
+  exports: [],
 })
 export class AgmSnazzyInfoWindowModule {}

@@ -38,6 +38,7 @@ import { Component } from '@angular/core';
 // tslint:enable: jsdoc-format
 @Directive({
   selector: 'agm-marker-cluster',
+  standalone: true,
   providers: [
     ClusterManager,
     { provide: MarkerManager, useExisting: ClusterManager },
@@ -48,40 +49,40 @@ export class AgmMarkerCluster implements OnDestroy, OnChanges, OnInit, MarkerClu
   /**
    * The grid size of a cluster in pixels
    */
-  @Input() gridSize: number;
+  @Input() gridSize!: number;
 
   /**
    * The maximum zoom level that a marker can be part of a cluster.
    */
-  @Input() maxZoom: number;
+  @Input() maxZoom!: number;
 
   /**
    * Whether the default behaviour of clicking on a cluster is to zoom into it.
    */
-  @Input() zoomOnClick: boolean;
+  @Input() zoomOnClick!: boolean;
 
   /**
    * Whether the center of each cluster should be the average of all markers in the cluster.
    */
-  @Input() averageCenter: boolean;
+  @Input() averageCenter!: boolean;
 
   /**
    * The minimum number of markers to be in a cluster before the markers are hidden and a count is shown.
    */
-  @Input() minimumClusterSize: number;
+  @Input() minimumClusterSize!: number;
 
   /**
    * An object that has style properties.
    */
-  @Input() styles: ClusterIconStyle[];
+  @Input() styles!: ClusterIconStyle[];
 
   /**
    * A function that calculates the cluster style and text based on the markers in the cluster.
    */
-  @Input() calculator: Calculator;
+  @Input() calculator!: Calculator;
 
-  @Input() imagePath: string;
-  @Input() imageExtension: string;
+  @Input() imagePath!: string;
+  @Input() imageExtension!: string;
 
   /**
    * The name of the CSS class defining general styles for the cluster markers.
@@ -90,7 +91,7 @@ export class AgmMarkerCluster implements OnDestroy, OnChanges, OnInit, MarkerClu
    *
    * @defaultValue 'cluster'
    */
-  @Input() clusterClass: string;
+  @Input() clusterClass!: string;
 
   /**
    * Whether to allow the use of cluster icons that have sizes that are some
@@ -101,7 +102,7 @@ export class AgmMarkerCluster implements OnDestroy, OnChanges, OnInit, MarkerClu
    *
    * @defaultValue false
    */
-  @Input() enableRetinaIcons: boolean;
+  @Input() enableRetinaIcons!: boolean;
 
   /**
    * Whether to ignore hidden markers in clusters. You may want to set this to
@@ -113,7 +114,7 @@ export class AgmMarkerCluster implements OnDestroy, OnChanges, OnInit, MarkerClu
    *
    * @defaultValue false
    */
-  @Input() ignoreHidden: boolean;
+  @Input() ignoreHidden!: boolean;
 
   /**
    * An array of numbers containing the widths of the group of
@@ -122,7 +123,7 @@ export class AgmMarkerCluster implements OnDestroy, OnChanges, OnInit, MarkerClu
    *
    * @defaultValue [53, 56, 66, 78, 90]
    */
-  @Input() imageSizes: number[];
+  @Input() imageSizes!: number[];
 
   /**
    * The tooltip to display when the mouse moves over a cluster marker.
@@ -131,7 +132,7 @@ export class AgmMarkerCluster implements OnDestroy, OnChanges, OnInit, MarkerClu
    *
    * @defaultValue ''
    */
-  @Input() title: string;
+  @Input() title!: string;
 
   @Output() clusterClick: EventEmitter<void> = new EventEmitter<void>();
 

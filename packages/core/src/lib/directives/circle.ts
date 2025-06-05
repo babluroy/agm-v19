@@ -5,17 +5,18 @@ import { CircleManager } from '../services/managers/circle-manager';
 
 @Directive({
   selector: 'agm-circle',
+  standalone: true,
 })
 export class AgmCircle implements OnInit, OnChanges, OnDestroy {
   /**
    * The latitude position of the circle (required).
    */
-  @Input() latitude: number;
+  @Input() latitude: number = 0;
 
   /**
    * The clickable position of the circle (required).
    */
-  @Input() longitude: number;
+  @Input() longitude: number = 0;
 
   /**
    * Indicates whether this Circle handles mouse events. Defaults to true.
@@ -37,27 +38,27 @@ export class AgmCircle implements OnInit, OnChanges, OnDestroy {
   /**
    * The fill color. All CSS3 colors are supported except for extended named colors.
    */
-  @Input() fillColor: string;
+  @Input() fillColor: string = '';
 
   /**
    * The fill opacity between 0.0 and 1.0.
    */
-  @Input() fillOpacity: number;
+  @Input() fillOpacity: number = 0;
 
   /**
    * The radius in meters on the Earth's surface.
    */
-  @Input() radius = 0;
+  @Input() radius: number = 0;
 
   /**
    * The stroke color. All CSS3 colors are supported except for extended named colors.
    */
-  @Input() strokeColor: string;
+  @Input() strokeColor: string = '';
 
   /**
    * The stroke opacity between 0.0 and 1.0
    */
-  @Input() strokeOpacity: number;
+  @Input() strokeOpacity: number = 0;
 
   /**
    * The stroke position. Defaults to CENTER.
@@ -78,7 +79,7 @@ export class AgmCircle implements OnInit, OnChanges, OnDestroy {
   /**
    * The zIndex compared to other polys.
    */
-  @Input() zIndex: number;
+  @Input() zIndex: number = 0;
 
   /**
    * This event is fired when the circle's center is changed.
@@ -88,53 +89,53 @@ export class AgmCircle implements OnInit, OnChanges, OnDestroy {
   /**
    * This event emitter gets emitted when the user clicks on the circle.
    */
-  @Output() circleClick: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() circleClick: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event emitter gets emitted when the user clicks on the circle.
    */
-  @Output() circleDblClick: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() circleDblClick: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is repeatedly fired while the user drags the circle.
    */
   // tslint:disable-next-line: no-output-native
-  @Output() drag: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() drag: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user stops dragging the circle.
    */
-  @Output() dragEnd: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() dragEnd: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user starts dragging the circle.
    */
-  @Output() dragStart: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() dragStart: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the DOM mousedown event is fired on the circle.
    */
-  @Output() mouseDown: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() mouseDown: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the DOM mousemove event is fired on the circle.
    */
-  @Output() mouseMove: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() mouseMove: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired on circle mouseout.
    */
-  @Output() mouseOut: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() mouseOut: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired on circle mouseover.
    */
-  @Output() mouseOver: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() mouseOver: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the DOM mouseup event is fired on the circle.
    */
-  @Output() mouseUp: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() mouseUp: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the circle's radius is changed.
@@ -144,7 +145,7 @@ export class AgmCircle implements OnInit, OnChanges, OnDestroy {
   /**
    * This event is fired when the circle is right-clicked on.
    */
-  @Output() rightClick: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() rightClick: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   private _circleAddedToManager = false;
 
@@ -218,7 +219,7 @@ export class AgmCircle implements OnInit, OnChanges, OnDestroy {
 
     events.forEach((eventEmitter, eventName) => {
       this._eventSubscriptions.push(
-          this._manager.createEventObservable<google.maps.MouseEvent>(eventName, this).subscribe((value) => {
+          this._manager.createEventObservable<google.maps.MapMouseEvent>(eventName, this).subscribe((value) => {
             switch (eventName) {
               case 'radius_changed':
                 this._manager.getRadius(this).then((radius) => eventEmitter.emit(radius));
@@ -238,7 +239,7 @@ export class AgmCircle implements OnInit, OnChanges, OnDestroy {
   /** @internal */
   ngOnDestroy() {
     this._eventSubscriptions.forEach(s => s.unsubscribe());
-    this._eventSubscriptions = null;
+    this._eventSubscriptions = [];
     this._manager.removeCircle(this);
   }
 

@@ -6,6 +6,7 @@ declare var require: any;
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'agm-snazzy-info-window',
+  standalone: true,
   template: '<div #outerWrapper><div #viewContainer></div></div><ng-content></ng-content>',
 })
 export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges {
@@ -13,13 +14,13 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
    * The latitude and longitude where the info window is anchored.
    * The offset will default to 0px when using this option. Only required/used if you are not using a agm-marker.
    */
-  @Input() latitude: number;
+  @Input() latitude!: number;
 
   /**
    * The longitude where the info window is anchored.
    * The offset will default to 0px when using this option. Only required/used if you are not using a agm-marker.
    */
-  @Input() longitude: number;
+  @Input() longitude!: number;
 
   /**
    * Changes the open status of the snazzy info window.
@@ -49,46 +50,46 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
   /**
    * The color to use for the background of the info window.
    */
-  @Input() backgroundColor: string;
+  @Input() backgroundColor!: string;
 
   /**
    * A custom padding size around the content of the info window.
    */
-  @Input() padding: string;
+  @Input() padding!: string;
 
   /**
    * A custom border around the info window. Set to false to completely remove the border.
    * The units used for border should be the same as pointer.
    */
-  @Input() border: {width: string; color: string} | boolean;
+  @Input() border!: {width: string; color: string} | boolean;
 
   /**
    * A custom CSS border radius property to specify the rounded corners of the info window.
    */
-  @Input() borderRadius: string;
+  @Input() borderRadius!: string;
 
   /**
    * The font color to use for the content inside the body of the info window.
    */
-  @Input() fontColor: string;
+  @Input() fontColor!: string;
 
   /**
    * The font size to use for the content inside the body of the info window.
    */
-  @Input() fontSize: string;
+  @Input() fontSize!: string;
 
   /**
    * The height of the pointer from the info window to the marker.
    * Set to false to completely remove the pointer.
    * The units used for pointer should be the same as border.
    */
-  @Input() pointer: string | boolean;
+  @Input() pointer!: string | boolean;
 
   /**
    * The CSS properties for the shadow of the info window.
    * Set to false to completely remove the shadow.
    */
-  @Input() shadow: boolean | {h?: string, v?: string, blur: string, spread: string, opacity: number, color: string};
+  @Input() shadow!: boolean | {h?: string, v?: string, blur: string, spread: string, opacity: number, color: string};
 
   /**
    * Determines if the info window will open when the marker is clicked.
@@ -107,7 +108,7 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
    * An optional CSS class to assign to the wrapper container of the info window.
    * Can be used for applying custom CSS to the info window.
    */
-  @Input() wrapperClass: string;
+  @Input() wrapperClass!: string;
 
   /**
    * Determines if the info window will close when any other Snazzy Info Window is opened.
@@ -137,17 +138,17 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
   /**
    * @internal
    */
-  @ViewChild('outerWrapper', {read: ElementRef, static: false}) _outerWrapper: ElementRef;
+  @ViewChild('outerWrapper', {read: ElementRef, static: false}) _outerWrapper!: ElementRef;
 
   /**
    * @internal
    */
-  @ViewChild('viewContainer', {read: ViewContainerRef, static: false}) _viewContainerRef: ViewContainerRef;
+  @ViewChild('viewContainer', {read: ViewContainerRef, static: false}) _viewContainerRef!: ViewContainerRef;
 
   /**
    * @internal
    */
-  @ContentChild(TemplateRef, {static: false}) _templateRef: TemplateRef<any>;
+  @ContentChild(TemplateRef, {static: false}) _templateRef!: TemplateRef<any>;
 
   protected _nativeSnazzyInfoWindow: any;
   protected _snazzyInfoWindowInitialized: Promise<any> | null = null;
@@ -236,16 +237,19 @@ export class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges 
   }
 
   protected _openInfoWindow() {
-    this._snazzyInfoWindowInitialized.then(() => {
-      this._createViewContent();
-      this._nativeSnazzyInfoWindow.open();
-    });
+    if (this._snazzyInfoWindowInitialized) {
+      this._snazzyInfoWindowInitialized.then(() => {
+        this._nativeSnazzyInfoWindow.open();
+      });
+    }
   }
 
   protected _closeInfoWindow() {
-    this._snazzyInfoWindowInitialized.then(() => {
-      this._nativeSnazzyInfoWindow.close();
-    });
+    if (this._snazzyInfoWindowInitialized) {
+      this._snazzyInfoWindowInitialized.then(() => {
+        this._nativeSnazzyInfoWindow.close();
+      });
+    }
   }
 
   protected _createViewContent() {

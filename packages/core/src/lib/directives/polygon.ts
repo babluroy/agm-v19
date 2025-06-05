@@ -55,6 +55,7 @@ import { MVCEvent } from '../utils/mvcarray-utils';
  */
 @Directive({
   selector: 'agm-polygon',
+  standalone: true,
 })
 export class AgmPolygon implements OnDestroy, OnChanges, AfterContentInit {
   /**
@@ -79,12 +80,12 @@ export class AgmPolygon implements OnDestroy, OnChanges, AfterContentInit {
    * The fill color. All CSS3 colors are supported except for extended
    * named colors.
    */
-  @Input() fillColor: string;
+  @Input() fillColor: string = '';
 
   /**
    * The fill opacity between 0.0 and 1.0
    */
-  @Input() fillOpacity: number;
+  @Input() fillOpacity: number = 0;
 
   /**
    * When true, edges of the polygon are interpreted as geodesic and will
@@ -106,35 +107,33 @@ export class AgmPolygon implements OnDestroy, OnChanges, AfterContentInit {
    * Inserting or removing LatLngs from the Array will automatically update
    * the polygon on the map.
    */
-  @Input() paths: google.maps.LatLng[] | google.maps.LatLng[][] |
-      google.maps.MVCArray<google.maps.LatLng> | google.maps.MVCArray<google.maps.MVCArray<google.maps.LatLng>> |
-      google.maps.LatLngLiteral[] | google.maps.LatLngLiteral[][] = [];
+  @Input() paths: google.maps.LatLngLiteral[] = [];
 
   /**
    * The stroke color. All CSS3 colors are supported except for extended
    * named colors.
    */
-  @Input() strokeColor: string;
+  @Input() strokeColor: string = '';
 
   /**
    * The stroke opacity between 0.0 and 1.0
    */
-  @Input() strokeOpacity: number;
+  @Input() strokeOpacity: number = 0;
 
   /**
    * The stroke width in pixels.
    */
-  @Input() strokeWeight: number;
+  @Input() strokeWeight: number = 0;
 
   /**
    * Whether this polygon is visible on the map. Defaults to true.
    */
-  @Input() visible: boolean;
+  @Input() visible: boolean = true;
 
   /**
    * The zIndex compared to other polys.
    */
-  @Input() zIndex: number;
+  @Input() zIndex: number = 0;
 
   /**
    * This event is fired when the DOM click event is fired on the Polygon.
@@ -149,17 +148,17 @@ export class AgmPolygon implements OnDestroy, OnChanges, AfterContentInit {
   /**
    * This event is repeatedly fired while the user drags the polygon.
    */
-  @Output() polyDrag: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() polyDrag: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user stops dragging the polygon.
    */
-  @Output() polyDragEnd: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() polyDragEnd: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user starts dragging the polygon.
    */
-  @Output() polyDragStart: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() polyDragStart: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the DOM mousedown event is fired on the Polygon.
@@ -202,7 +201,7 @@ export class AgmPolygon implements OnDestroy, OnChanges, AfterContentInit {
     'editable', 'visible',
   ];
 
-  private _id: string;
+  private _id: string = '';
   private _polygonAddedToManager = false;
   private _subscriptions: Subscription[] = [];
 
@@ -232,17 +231,17 @@ export class AgmPolygon implements OnDestroy, OnChanges, AfterContentInit {
 
   private _addEventListeners() {
     const handlers = [
-      { name: 'click', handler: (ev: google.maps.PolyMouseEvent) => this.polyClick.emit(ev) },
-      { name: 'dblclick', handler: (ev: google.maps.PolyMouseEvent) => this.polyDblClick.emit(ev) },
-      { name: 'drag', handler: (ev: google.maps.MouseEvent) => this.polyDrag.emit(ev) },
-      { name: 'dragend', handler: (ev: google.maps.MouseEvent) => this.polyDragEnd.emit(ev) },
-      { name: 'dragstart', handler: (ev: google.maps.MouseEvent) => this.polyDragStart.emit(ev) },
-      { name: 'mousedown', handler: (ev: google.maps.PolyMouseEvent) => this.polyMouseDown.emit(ev) },
-      { name: 'mousemove', handler: (ev: google.maps.PolyMouseEvent) => this.polyMouseMove.emit(ev) },
-      { name: 'mouseout', handler: (ev: google.maps.PolyMouseEvent) => this.polyMouseOut.emit(ev) },
-      { name: 'mouseover', handler: (ev: google.maps.PolyMouseEvent) => this.polyMouseOver.emit(ev) },
-      { name: 'mouseup', handler: (ev: google.maps.PolyMouseEvent) => this.polyMouseUp.emit(ev) },
-      { name: 'rightclick', handler: (ev: google.maps.PolyMouseEvent) => this.polyRightClick.emit(ev) },
+      {name: 'click', handler: (ev: google.maps.PolyMouseEvent) => this.polyClick.emit(ev)},
+      {name: 'dblclick', handler: (ev: google.maps.PolyMouseEvent) => this.polyDblClick.emit(ev)},
+      {name: 'drag', handler: (ev: google.maps.MapMouseEvent) => this.polyDrag.emit(ev)},
+      {name: 'dragend', handler: (ev: google.maps.MapMouseEvent) => this.polyDragEnd.emit(ev)},
+      {name: 'dragstart', handler: (ev: google.maps.MapMouseEvent) => this.polyDragStart.emit(ev)},
+      {name: 'mousedown', handler: (ev: google.maps.PolyMouseEvent) => this.polyMouseDown.emit(ev)},
+      {name: 'mousemove', handler: (ev: google.maps.PolyMouseEvent) => this.polyMouseMove.emit(ev)},
+      {name: 'mouseout', handler: (ev: google.maps.PolyMouseEvent) => this.polyMouseOut.emit(ev)},
+      {name: 'mouseover', handler: (ev: google.maps.PolyMouseEvent) => this.polyMouseOver.emit(ev)},
+      {name: 'mouseup', handler: (ev: google.maps.PolyMouseEvent) => this.polyMouseUp.emit(ev)},
+      {name: 'rightclick', handler: (ev: google.maps.PolyMouseEvent) => this.polyRightClick.emit(ev)},
     ];
     handlers.forEach((obj) => {
       const os = this._polygonManager.createEventObservable(obj.name, this).subscribe(obj.handler);

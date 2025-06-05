@@ -30,7 +30,7 @@ describe('AgmMap', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         AgmMap,
       ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ]});

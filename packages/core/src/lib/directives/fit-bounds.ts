@@ -12,6 +12,7 @@ import { FitBoundsAccessor, FitBoundsDetails, FitBoundsService } from '../servic
  */
 @Directive({
   selector: '[agmFitBounds]',
+  standalone: true,
 })
 export class AgmFitBounds implements OnInit, OnDestroy, OnChanges {
   /**

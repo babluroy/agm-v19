@@ -14,7 +14,7 @@ export class MarkerManager {
 
   async convertAnimation(uiAnim: keyof typeof google.maps.Animation | null) {
     if (uiAnim === null) {
-      return null;
+      return undefined;
     } else {
       return this._mapsWrapper.getNativeMap().then(() => google.maps.Animation[uiAnim]);
     }
@@ -35,45 +35,45 @@ export class MarkerManager {
   }
 
   updateMarkerPosition(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then(
+    return this._markers.get(marker)!.then(
         (m: google.maps.Marker) => m.setPosition({lat: marker.latitude, lng: marker.longitude}));
   }
 
   updateTitle(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then((m: google.maps.Marker) => m.setTitle(marker.title));
+    return this._markers.get(marker)!.then((m: google.maps.Marker) => m.setTitle(marker.title));
   }
 
   updateLabel(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then((m: google.maps.Marker) => { m.setLabel(marker.label); });
+    return this._markers.get(marker)!.then((m: google.maps.Marker) => { m.setLabel(marker.label); });
   }
 
   updateDraggable(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then((m: google.maps.Marker) => m.setDraggable(marker.draggable));
+    return this._markers.get(marker)!.then((m: google.maps.Marker) => m.setDraggable(marker.draggable));
   }
 
   updateIcon(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then((m: google.maps.Marker) => m.setIcon(marker.iconUrl));
+    return this._markers.get(marker)!.then((m: google.maps.Marker) => m.setIcon(marker.iconUrl));
   }
 
   updateOpacity(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then((m: google.maps.Marker) => m.setOpacity(marker.opacity));
+    return this._markers.get(marker)!.then((m: google.maps.Marker) => m.setOpacity(marker.opacity));
   }
 
   updateVisible(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then((m: google.maps.Marker) => m.setVisible(marker.visible));
+    return this._markers.get(marker)!.then((m: google.maps.Marker) => m.setVisible(marker.visible));
   }
 
   updateZIndex(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then((m: google.maps.Marker) => m.setZIndex(marker.zIndex));
+    return this._markers.get(marker)!.then((m: google.maps.Marker) => m.setZIndex(marker.zIndex));
   }
 
   updateClickable(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then((m: google.maps.Marker) => m.setClickable(marker.clickable));
+    return this._markers.get(marker)!.then((m: google.maps.Marker) => m.setClickable(marker.clickable));
   }
 
   async updateAnimation(marker: AgmMarker) {
-    const m = await this._markers.get(marker);
-    m.setAnimation(await this.convertAnimation(marker.animation));
+    const m = await this._markers.get(marker)!;
+    m.setAnimation(await this.convertAnimation(marker.animation) as google.maps.Animation | null);
   }
 
   addMarker(marker: AgmMarker) {
@@ -94,15 +94,19 @@ export class MarkerManager {
   }
 
   getNativeMarker(marker: AgmMarker): Promise<google.maps.Marker> {
-    return this._markers.get(marker);
+    const markerPromise = this._markers.get(marker);
+    if (!markerPromise) {
+      return Promise.reject(new Error('Marker not found'));
+    }
+    return markerPromise;
   }
 
-  createEventObservable<T extends (google.maps.MouseEvent | void)>(
-      eventName: google.maps.MarkerMouseEventNames | google.maps.MarkerChangeOptionEventNames,
+  createEventObservable<T extends (google.maps.MapMouseEvent | void)>(
+      eventName: string,
       marker: AgmMarker): Observable<T> {
     return new Observable(observer => {
-      this._markers.get(marker).then(m =>
-        m.addListener(eventName, e => this._zone.run(() => observer.next(e)))
+      this._markers.get(marker)!.then(m =>
+        m.addListener(eventName, (e: any) => this._zone.run(() => observer.next(e)))
       );
     });
   }

@@ -40,7 +40,7 @@ export class PolygonManager {
   }
 
   setPolygonOptions(path: AgmPolygon, options: { [propName: string]: any }): Promise<void> {
-    return this._polygons.get(path).then((l: google.maps.Polygon) => { l.setOptions(options); });
+    return this._polygons.get(path)!.then((l: google.maps.Polygon) => { l.setOptions(options); });
   }
 
   deletePolygon(paths: AgmPolygon): Promise<void> {
@@ -57,18 +57,18 @@ export class PolygonManager {
   }
 
   getPath(polygonDirective: AgmPolygon): Promise<google.maps.LatLng[]> {
-    return this._polygons.get(polygonDirective)
+    return this._polygons.get(polygonDirective)!
       .then((polygon) => polygon.getPath().getArray());
   }
 
   getPaths(polygonDirective: AgmPolygon): Promise<google.maps.LatLng[][]> {
-    return this._polygons.get(polygonDirective)
+    return this._polygons.get(polygonDirective)!
       .then((polygon) => polygon.getPaths().getArray().map((p) => p.getArray()));
   }
 
-  createEventObservable<T>(eventName: string, path: AgmPolygon): Observable<T> {
+  createEventObservable<T extends (google.maps.MapMouseEvent | google.maps.PolyMouseEvent)>(eventName: string, path: AgmPolygon): Observable<T> {
     return new Observable((observer: Observer<T>) => {
-      this._polygons.get(path).then((l: google.maps.Polygon) => {
+      this._polygons.get(path)!.then((l: google.maps.Polygon) => {
         l.addListener(eventName, (e: T) => this._zone.run(() => observer.next(e)));
       });
     });
@@ -76,7 +76,7 @@ export class PolygonManager {
 
   async createPathEventObservable(agmPolygon: AgmPolygon):
         Promise<Observable<MVCEvent<google.maps.LatLng[] | google.maps.LatLngLiteral[]>>> {
-    const polygon = await this._polygons.get(agmPolygon);
+    const polygon = await this._polygons.get(agmPolygon)!;
     const paths = polygon.getPaths();
     const pathsChanges$ = createMVCEventObservable(paths);
     return pathsChanges$.pipe(
@@ -98,7 +98,7 @@ export class PolygonManager {
             index: parentMVEvent.index,
           } as MVCEvent<google.maps.LatLng[] | google.maps.LatLngLiteral[]>;
           if (parentMVEvent.previous) {
-            retVal.previous =  parentMVEvent.previous.getArray();
+            retVal.previous = parentMVEvent.previous.getArray().map(latLng => latLng.toJSON());
           }
         } else {
           retVal = {
@@ -108,7 +108,7 @@ export class PolygonManager {
             index: chMVCEvent.index,
           } as unknown as MVCEvent<google.maps.LatLng[] | google.maps.LatLngLiteral[]>;
           if (chMVCEvent.previous) {
-            retVal.previous = chMVCEvent.previous;
+            retVal.previous = [chMVCEvent.previous.toJSON()];
           }
         }
         return retVal;

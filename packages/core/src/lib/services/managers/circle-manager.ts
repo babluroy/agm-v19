@@ -36,14 +36,14 @@ export class CircleManager {
    * Removes the given circle from the map.
    */
   removeCircle(circle: AgmCircle): Promise<void> {
-    return this._circles.get(circle).then((c) => {
+    return this._circles.get(circle)!.then((c) => {
       c.setMap(null);
       this._circles.delete(circle);
     });
   }
 
   async setOptions(circle: AgmCircle, options: google.maps.CircleOptions) {
-    return this._circles.get(circle).then((c) => {
+    return this._circles.get(circle)!.then((c) => {
       const actualParam = options.strokePosition as any as keyof typeof google.maps.StrokePosition;
       options.strokePosition = google.maps.StrokePosition[actualParam];
       c.setOptions(options);
@@ -51,54 +51,47 @@ export class CircleManager {
   }
 
   getBounds(circle: AgmCircle): Promise<google.maps.LatLngBounds> {
-    return this._circles.get(circle).then((c) => c.getBounds());
+    return this._circles.get(circle)!.then((c) => c.getBounds() ?? new google.maps.LatLngBounds());
   }
 
   getCenter(circle: AgmCircle): Promise<google.maps.LatLng> {
-    return this._circles.get(circle).then((c) => c.getCenter());
+    return this._circles.get(circle)!.then((c) => c.getCenter() ?? new google.maps.LatLng(0, 0));
   }
 
   getRadius(circle: AgmCircle): Promise<number> {
-    return this._circles.get(circle).then((c) => c.getRadius());
+    return this._circles.get(circle)!.then((c) => c.getRadius() ?? 0);
   }
 
   setCenter(circle: AgmCircle): Promise<void> {
-    return this._circles.get(circle).then(
+    return this._circles.get(circle)!.then(
         c => c.setCenter({lat: circle.latitude, lng: circle.longitude}));
   }
 
   setEditable(circle: AgmCircle): Promise<void> {
-    return this._circles.get(circle).then(c => c.setEditable(circle.editable));
+    return this._circles.get(circle)!.then((c) => c.setEditable(circle.editable));
   }
 
   setDraggable(circle: AgmCircle): Promise<void> {
-    return this._circles.get(circle).then(c => c.setDraggable(circle.draggable));
+    return this._circles.get(circle)!.then((c) => c.setDraggable(circle.draggable));
   }
 
   setVisible(circle: AgmCircle): Promise<void> {
-    return this._circles.get(circle).then(c => c.setVisible(circle.visible));
+    return this._circles.get(circle)!.then((c) => c.setVisible(circle.visible));
   }
 
   setRadius(circle: AgmCircle): Promise<void> {
-    return this._circles.get(circle).then(c => c.setRadius(circle.radius));
+    return this._circles.get(circle)!.then((c) => c.setRadius(circle.radius));
   }
 
   getNativeCircle(circle: AgmCircle): Promise<google.maps.Circle> {
-    return this._circles.get(circle);
+    return this._circles.get(circle)!;
   }
 
   createEventObservable<T>(eventName: string, circle: AgmCircle): Observable<T> {
     return new Observable((observer: Observer<T>) => {
-      let listener: google.maps.MapsEventListener = null;
-      this._circles.get(circle).then((c) => {
-        listener = c.addListener(eventName, (e: T) => this._zone.run(() => observer.next(e)));
+      this._circles.get(circle)!.then((c: google.maps.Circle) => {
+        c.addListener(eventName, (e: any) => this._zone.run(() => observer.next(e as T)));
       });
-
-      return () => {
-        if (listener !== null) {
-          listener.remove();
-        }
-      };
     });
   }
 }

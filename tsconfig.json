@@ -9,12 +9,18 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2020",
-    "module": "es2020",
+    "target": "es2022",
+    "module": "es2022",
+    "useDefineForClassFields": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "lib": [
-      "es2018",
+      "es2022",
       "dom"
     ],
     "paths": {
@@ -38,7 +44,17 @@
       ]
     },
     "types": [
-      "googlemaps", "jest", "node"
-    ]
+      "google.maps",
+      "jest",
+      "node"
+    ],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
   }
 }

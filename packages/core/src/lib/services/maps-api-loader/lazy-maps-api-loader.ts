@@ -80,7 +80,7 @@ export interface LazyMapsAPILoaderConfigLiteral {
 
 @Injectable()
 export class LazyMapsAPILoader extends MapsAPILoader {
-  protected _scriptLoadingPromise: Promise<void>;
+  protected _scriptLoadingPromise!: Promise<void>;
   protected _config: LazyMapsAPILoaderConfigLiteral;
   protected _windowRef: WindowRef;
   protected _documentRef: DocumentRef;
@@ -130,7 +130,7 @@ export class LazyMapsAPILoader extends MapsAPILoader {
         resolve();
       };
 
-      scriptElem.onerror = (error: Event) => {
+      scriptElem.onerror = (error: string | Event) => {
         reject(error);
       };
     });
@@ -157,31 +157,28 @@ export class LazyMapsAPILoader extends MapsAPILoader {
     const queryParams: {[key: string]: string | string[]} = {
       v: this._config.apiVersion || 'quarterly',
       callback: callbackName,
-      key: this._config.apiKey,
-      client: this._config.clientId,
-      channel: this._config.channel,
-      libraries: this._config.libraries,
-      region: this._config.region,
-      language: this._config.language || (this.localeId !== 'en-US' ? this.localeId : null),
+      key: this._config.apiKey || '',
+      client: this._config.clientId || '',
+      channel: this._config.channel || '',
+      libraries: this._config.libraries || [],
+      region: this._config.region || '',
+      language: this._config.language || (this.localeId !== 'en-US' ? this.localeId : 'en-US'),
     };
     const params: string = Object.keys(queryParams)
                                .filter((k: string) => queryParams[k] != null)
                                .filter((k: string) => {
                                  // remove empty arrays
-                                 return !Array.isArray(queryParams[k]) ||
-                                     (Array.isArray(queryParams[k]) && queryParams[k].length > 0);
+                                 return !Array.isArray(queryParams[k]) || (Array.isArray(queryParams[k]) && queryParams[k].length > 0);
                                })
                                .map((k: string) => {
-                                 // join arrays as comma seperated strings
+                                 // join arrays as comma separated strings
                                  const i = queryParams[k];
                                  if (Array.isArray(i)) {
                                    return {key: k, value: i.join(',')};
                                  }
-                                 return {key: k, value: queryParams[k]};
+                                 return {key: k, value: i as string};
                                })
-                               .map((entry: {key: string, value: string}) => {
-                                 return `${entry.key}=${entry.value}`;
-                               })
+                               .map((entry: {key: string, value: string}) => `${entry.key}=${entry.value}`)
                                .join('&');
     return `${protocol}//${hostAndPath}?${params}`;
   }

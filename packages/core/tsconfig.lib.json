@@ -10,7 +10,20 @@
     "lib": [
       "dom",
       "es2018"
-    ]
+    ],
+    "types": [
+      "node",
+      "google.maps"
+    ],
+    "typeRoots": [
+      "../../node_modules/@types",
+      "node_modules/@types"
+    ],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
   },
   "angularCompilerOptions": {
     "skipTemplateCodegen": true,

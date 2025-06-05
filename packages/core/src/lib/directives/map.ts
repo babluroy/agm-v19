@@ -18,7 +18,7 @@ export type ControlPosition = keyof typeof google.maps.ControlPosition;
 
 @Directive()
 export abstract class AgmMapControl {
-  @Input() position: ControlPosition;
+  @Input() position: ControlPosition = 'TOP_RIGHT';
   abstract getOptions(): Partial<google.maps.MapOptions>;
 }
 
@@ -41,8 +41,8 @@ export class AgmFullscreenControl extends AgmMapControl {
   providers: [{ provide: AgmMapControl, useExisting: AgmMapTypeControl }],
 })
 export class AgmMapTypeControl extends AgmMapControl {
-  @Input() mapTypeIds: (keyof typeof google.maps.MapTypeId)[];
-  @Input() style: keyof typeof google.maps.MapTypeControlStyle;
+  @Input() mapTypeIds: (keyof typeof google.maps.MapTypeId)[] = [];
+  @Input() style: keyof typeof google.maps.MapTypeControlStyle = 'DEFAULT';
 
   getOptions(): Partial<google.maps.MapOptions> {
     return {
@@ -117,14 +117,13 @@ export class AgmStreetViewControl extends AgmMapControl {
   selector: 'agm-map agm-zoom-control',
   providers: [{ provide: AgmMapControl, useExisting: AgmZoomControl }],
 })
-export class AgmZoomControl extends AgmMapControl{
-  @Input() style: keyof typeof google.maps.ZoomControlStyle;
+export class AgmZoomControl extends AgmMapControl {
+  @Input() style: 'DEFAULT' | 'LARGE' | 'SMALL' = 'DEFAULT';
   getOptions(): Partial<google.maps.MapOptions> {
     return {
       zoomControl: true,
       zoomControlOptions: {
         position: this.position && google.maps.ControlPosition[this.position],
-        style: this.style && google.maps.ZoomControlStyle[this.style],
       },
     };
   }
@@ -155,6 +154,7 @@ export class AgmZoomControl extends AgmMapControl{
  */
 @Component({
   selector: 'agm-map',
+  standalone: true,
   providers: [
     CircleManager,
     DataLayerManager,
@@ -194,6 +194,22 @@ export class AgmMap implements OnChanges, AfterContentInit, OnDestroy {
     'keyboardShortcuts', 'styles', 'zoom', 'minZoom', 'maxZoom', 'mapTypeId', 'clickableIcons',
     'gestureHandling', 'tilt', 'restriction',
   ];
+
+  @Input() position: ControlPosition = 'TOP_RIGHT';
+  @Input() mapTypeIds: (keyof typeof google.maps.MapTypeId)[] = [];
+  @Input() style: keyof typeof google.maps.MapTypeControlStyle = 'DEFAULT';
+  @Input() minZoom: number = 0;
+  @Input() maxZoom: number = 0;
+  @Input() controlSize: number = 0;
+  @Input() backgroundColor: string = '';
+  @Input() draggableCursor: string = '';
+  @Input() draggingCursor: string = '';
+  @Input() fitBoundsPadding: number | google.maps.Padding = 0;
+  @Input() restriction: google.maps.MapRestriction | undefined = undefined;
+
+  private _fitBoundsSubscription: Subscription | undefined = undefined;
+  @ContentChildren(AgmMapControl) mapControls: QueryList<AgmMapControl> = new QueryList<AgmMapControl>();
+
   /**
    * The longitude that defines the center of the map.
    */
@@ -208,23 +224,6 @@ export class AgmMap implements OnChanges, AfterContentInit, OnDestroy {
    * The zoom level of the map. The default zoom level is 8.
    */
   @Input() zoom = 8;
-
-  /**
-   * The minimal zoom level of the map allowed. When not provided, no restrictions to the zoom level
-   * are enforced.
-   */
-  @Input() minZoom: number;
-
-  /**
-   * The maximal zoom level of the map allowed. When not provided, no restrictions to the zoom level
-   * are enforced.
-   */
-  @Input() maxZoom: number;
-
-  /**
-   * The control size for the default map controls. Only governs the controls made by the Maps API itself
-   */
-  @Input() controlSize: number;
 
   /**
    * Enables/disables if map is draggable.
@@ -247,28 +246,6 @@ export class AgmMap implements OnChanges, AfterContentInit, OnDestroy {
    * If false, disables scrollwheel zooming on the map. The scrollwheel is enabled by default.
    */
   @Input() scrollwheel = true;
-
-  /**
-   * Color used for the background of the Map div. This color will be visible when tiles have not
-   * yet loaded as the user pans. This option can only be set when the map is initialized.
-   */
-  @Input() backgroundColor: string;
-
-  /**
-   * The name or url of the cursor to display when mousing over a draggable map. This property uses
-   * the css  * cursor attribute to change the icon. As with the css property, you must specify at
-   * least one fallback cursor that is not a URL. For example:
-   * [draggableCursor]="'url(http://www.example.com/icon.png), auto;'"
-   */
-  @Input() draggableCursor: string;
-
-  /**
-   * The name or url of the cursor to display when the map is being dragged. This property uses the
-   * css cursor attribute to change the icon. As with the css property, you must specify at least
-   * one fallback cursor that is not a URL. For example:
-   * [draggingCursor]="'url(http://www.example.com/icon.png), auto;'"
-   */
-  @Input() draggingCursor: string;
 
   /**
    * If false, prevents the map from being controlled by the keyboard. Keyboard shortcuts are
@@ -294,11 +271,6 @@ export class AgmMap implements OnChanges, AfterContentInit, OnDestroy {
    * If this option to `true`, the bounds get automatically computed from all elements that use the {@link AgmFitBounds} directive.
    */
   @Input() fitBounds: google.maps.LatLngBoundsLiteral | google.maps.LatLngBounds | boolean = false;
-
-  /**
-   * Padding amount for the bounds.
-   */
-  @Input() fitBoundsPadding: number | google.maps.Padding;
 
   /**
    * The map mapTypeId. Defaults to 'roadmap'.
@@ -327,7 +299,7 @@ export class AgmMap implements OnChanges, AfterContentInit, OnDestroy {
    * - 'none'        (The map cannot be panned or zoomed by user gestures.)
    * - 'auto'        [default] (Gesture handling is either cooperative or greedy, depending on whether the page is scrollable or not.
    */
-  @Input() gestureHandling: google.maps.GestureHandlingOptions = 'auto';
+  @Input() gestureHandling: 'cooperative' | 'greedy' | 'none' | 'auto' = 'auto';
 
     /**
      * Controls the automatic switching behavior for the angle of incidence of
@@ -345,33 +317,26 @@ export class AgmMap implements OnChanges, AfterContentInit, OnDestroy {
      */
   @Input() tilt = 0;
 
-  /**
-   * Options for restricting the bounds of the map.
-   * User cannot pan or zoom away from restricted area.
-   */
-  @Input() restriction: google.maps.MapRestriction;
-
   private _observableSubscriptions: Subscription[] = [];
-  private _fitBoundsSubscription: Subscription;
 
   /**
    * This event emitter gets emitted when the user clicks on the map (but not when they click on a
    * marker or infoWindow).
    */
   // tslint:disable-next-line: max-line-length
-  @Output() mapClick: EventEmitter<google.maps.MouseEvent | google.maps.IconMouseEvent> = new EventEmitter<google.maps.MouseEvent | google.maps.IconMouseEvent>();
+  @Output() mapClick: EventEmitter<google.maps.MapMouseEvent | google.maps.IconMouseEvent> = new EventEmitter<google.maps.MapMouseEvent | google.maps.IconMouseEvent>();
 
   /**
    * This event emitter gets emitted when the user right-clicks on the map (but not when they click
    * on a marker or infoWindow).
    */
-  @Output() mapRightClick: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() mapRightClick: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event emitter gets emitted when the user double-clicks on the map (but not when they click
    * on a marker or infoWindow).
    */
-  @Output() mapDblClick: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() mapDblClick: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event emitter is fired when the map center changes.
@@ -408,8 +373,6 @@ export class AgmMap implements OnChanges, AfterContentInit, OnDestroy {
    * This event is fired when the visible tiles have finished loading.
    */
   @Output() tilesLoaded: EventEmitter<void> = new EventEmitter<void>();
-
-  @ContentChildren(AgmMapControl) mapControls: QueryList<AgmMapControl>;
 
   constructor(
     private _elem: ElementRef,
@@ -644,7 +607,7 @@ export class AgmMap implements OnChanges, AfterContentInit, OnDestroy {
   }
 
   private _handleMapMouseEvents() {
-    type Event = { name: 'rightclick' | 'click' | 'dblclick', emitter: EventEmitter<google.maps.MouseEvent> };
+    type Event = { name: 'rightclick' | 'click' | 'dblclick', emitter: EventEmitter<google.maps.MapMouseEvent> };
 
     const events: Event[] = [
       {name: 'click', emitter: this.mapClick},
@@ -655,8 +618,7 @@ export class AgmMap implements OnChanges, AfterContentInit, OnDestroy {
     events.forEach(e => {
       const s = this._mapsWrapper.subscribeToMapEvent(e.name).subscribe(
         ([event]) => {
-          // the placeId will be undefined in case the event was not an IconMouseEvent (google types)
-          if ( (event as google.maps.IconMouseEvent).placeId && !this.showDefaultInfoWindow) {
+          if ((event as google.maps.IconMouseEvent).placeId && !this.showDefaultInfoWindow) {
             event.stop();
           }
           e.emitter.emit(event);

@@ -8,10 +8,10 @@ import { AgmMarkerCluster } from '../../directives/marker-cluster';
 @Injectable()
 export class ClusterManager extends MarkerManager {
   private _clustererInstance: Promise<MarkerClusterer>;
-  private _resolver: (cluster: MarkerClusterer) => void;
-  protected _markers: Map<AgmMarker, Promise<google.maps.Marker>> = new Map<AgmMarker, Promise<google.maps.Marker>>();
+  private _resolver!: (cluster: MarkerClusterer) => void;
+  protected override _markers: Map<AgmMarker, Promise<google.maps.Marker>> = new Map<AgmMarker, Promise<google.maps.Marker>>();
 
-  constructor(protected _mapsWrapper: GoogleMapsAPIWrapper, protected _zone: NgZone) {
+  constructor(protected override _mapsWrapper: GoogleMapsAPIWrapper, protected override _zone: NgZone) {
     super(_mapsWrapper, _zone);
     this._clustererInstance = new Promise<MarkerClusterer>((resolver) => {
       this._resolver = resolver;
@@ -29,7 +29,7 @@ export class ClusterManager extends MarkerManager {
     return this._clustererInstance;
   }
 
-  addMarker(markerDirective: AgmMarker): void {
+  override addMarker(markerDirective: AgmMarker): void {
     const clusterPromise: Promise<MarkerClusterer> = this.getClustererInstance();
     const markerPromise = this._mapsWrapper
       .createMarker({
@@ -53,7 +53,7 @@ export class ClusterManager extends MarkerManager {
     this._markers.set(markerDirective, markerPromise);
   }
 
-  deleteMarker(marker: AgmMarker): Promise<void> {
+  override deleteMarker(marker: AgmMarker): Promise<void> {
     const markerPromise = this._markers.get(marker);
     if (markerPromise == null) {
       // marker already deleted

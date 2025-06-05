@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, forwardRef, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Directive, EventEmitter, forwardRef, Input, OnChanges, Output, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { FitBoundsAccessor, FitBoundsDetails } from '../services/fit-bounds';
@@ -9,20 +9,21 @@ import { FitBoundsAccessor, FitBoundsDetails } from '../services/fit-bounds';
  */
 @Directive({
   selector: 'agm-polyline-point',
+  standalone: true,
   providers: [
     {provide: FitBoundsAccessor, useExisting: forwardRef(() => AgmPolylinePoint)},
   ],
 })
-export class AgmPolylinePoint implements OnChanges, FitBoundsAccessor {
+export class AgmPolylinePoint implements OnInit, OnDestroy, OnChanges, FitBoundsAccessor {
   /**
    * The latitude position of the point.
    */
-  @Input() public latitude: number;
+  @Input() public latitude: number = 0;
 
   /**
    * The longitude position of the point;
    */
-  @Input() public longitude: number;
+  @Input() public longitude: number = 0;
 
   /**
    * This event emitter gets emitted when the position of the point changed.
@@ -30,6 +31,14 @@ export class AgmPolylinePoint implements OnChanges, FitBoundsAccessor {
   @Output() positionChanged: EventEmitter<google.maps.LatLngLiteral> = new EventEmitter<google.maps.LatLngLiteral>();
 
   constructor() {}
+
+  ngOnInit(): void {
+    // Additional initialization logic if needed
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup logic if needed
+  }
 
   ngOnChanges(changes: SimpleChanges): any {
     // tslint:disable: no-string-literal

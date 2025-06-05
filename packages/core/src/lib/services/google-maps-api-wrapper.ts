@@ -10,7 +10,7 @@ import { MapsAPILoader } from './maps-api-loader/maps-api-loader';
 @Injectable()
 export class GoogleMapsAPIWrapper {
   private _map: Promise<google.maps.Map>;
-  private _mapResolver: (value?: google.maps.Map) => void;
+  private _mapResolver!: (value: google.maps.Map) => void;
 
   constructor(private _loader: MapsAPILoader, private _zone: NgZone) {
     this._map =
@@ -146,11 +146,10 @@ export class GoogleMapsAPIWrapper {
     return this._map.then(() => google.maps.geometry.poly.containsLocation(latLng, polygon));
   }
 
-  subscribeToMapEvent<N extends keyof google.maps.MapHandlerMap>(eventName: N)
-      : Observable<google.maps.MapHandlerMap[N]> {
+  subscribeToMapEvent(eventName: string): Observable<any> {
     return new Observable((observer) => {
       this._map.then(m =>
-        m.addListener(eventName, (...evArgs) => this._zone.run(() => observer.next(evArgs)))
+        m.addListener(eventName, (...evArgs: any[]) => this._zone.run(() => observer.next(evArgs)))
       );
     });
   }
@@ -171,19 +170,23 @@ export class GoogleMapsAPIWrapper {
 
   getZoom(): Promise<number> {
     return this._zone.runOutsideAngular(() => {
-      return this._map.then((map: google.maps.Map) => map.getZoom());
+      return this._map.then((m) => m.getZoom() ?? 0);
     });
   }
 
   getBounds(): Promise<google.maps.LatLngBounds> {
     return this._zone.runOutsideAngular(() => {
-      return this._map.then((map: google.maps.Map) => map.getBounds());
+      return this._map.then((map: google.maps.Map) => {
+        const bounds = map.getBounds();
+        if (!bounds) throw new Error('Map bounds are not available');
+        return bounds;
+      });
     });
   }
 
   getMapTypeId(): Promise<google.maps.MapTypeId> {
     return this._zone.runOutsideAngular(() => {
-      return this._map.then((map: google.maps.Map) => map.getMapTypeId());
+      return this._map.then((m) => m.getMapTypeId() as google.maps.MapTypeId ?? 'roadmap');
     });
   }
 
@@ -195,7 +198,7 @@ export class GoogleMapsAPIWrapper {
 
   getCenter(): Promise<google.maps.LatLng> {
     return this._zone.runOutsideAngular(() => {
-      return this._map.then((map: google.maps.Map) => map.getCenter());
+      return this._map.then((m) => m.getCenter() ?? new google.maps.LatLng(0, 0));
     });
   }
 

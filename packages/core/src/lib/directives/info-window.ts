@@ -1,4 +1,5 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { InfoWindowManager } from '../services/managers/info-window-manager';
 
@@ -34,6 +35,7 @@ let infoWindowId = 0;
  */
 @Component({
   selector: 'agm-info-window',
+  standalone: true,
   template: `<div class='agm-info-window-content'>
       <ng-content></ng-content>
     </div>
@@ -44,19 +46,19 @@ export class AgmInfoWindow implements OnDestroy, OnChanges, OnInit {
    * The latitude position of the info window (only usefull if you use it ouside of a {@link
    * AgmMarker}).
    */
-  @Input() latitude: number;
+  @Input() latitude: number = 0;
 
   /**
    * The longitude position of the info window (only usefull if you use it ouside of a {@link
    * AgmMarker}).
    */
-  @Input() longitude: number;
+  @Input() longitude: number = 0;
 
   /**
    * Disable auto-pan on open. By default, the info window will pan the map so that it is fully
    * visible when it opens.
    */
-  @Input() disableAutoPan: boolean;
+  @Input() disableAutoPan: boolean = false;
 
   /**
    * All InfoWindows are displayed on the map in order of their zIndex, with higher values
@@ -64,24 +66,24 @@ export class AgmInfoWindow implements OnDestroy, OnChanges, OnInit {
    * according to their latitude, with InfoWindows of lower latitudes appearing in front of
    * InfoWindows at higher latitudes. InfoWindows are always displayed in front of markers.
    */
-  @Input() zIndex: number;
+  @Input() zIndex: number = 0;
 
   /**
    * Maximum width of the infowindow, regardless of content's width. This value is only considered
    * if it is set before a call to open. To change the maximum width when changing content, call
    * close, update maxWidth, and then open.
    */
-  @Input() maxWidth: number;
+  @Input() maxWidth: number = 0;
 
   /**
    * Holds the marker that is the host of the info window (if available)
    */
-  hostMarker: AgmMarker;
+  @Input() hostMarker: AgmMarker | undefined = undefined;
 
   /**
    * Holds the native element that is used for the info window content.
    */
-  content: Node;
+  @Input() content: string | undefined = undefined;
 
   /**
    * Sets the open state for the InfoWindow. You can also call the open() and close() methods.
@@ -96,11 +98,11 @@ export class AgmInfoWindow implements OnDestroy, OnChanges, OnInit {
   private static _infoWindowOptionsInputs: string[] = ['disableAutoPan', 'maxWidth'];
   private _infoWindowAddedToManager = false;
   private _id: string = (infoWindowId++).toString();
+  private _eventSubscriptions: Subscription[] = [];
 
-  constructor(private _infoWindowManager: InfoWindowManager, private _el: ElementRef) {}
+  constructor(private _infoWindowManager: InfoWindowManager) {}
 
   ngOnInit() {
-    this.content = this._el.nativeElement.querySelector('.agm-info-window-content');
     this._infoWindowManager.addInfoWindow(this);
     this._infoWindowAddedToManager = true;
     this._updateOpenState();
@@ -128,10 +130,10 @@ export class AgmInfoWindow implements OnDestroy, OnChanges, OnInit {
   // tslint:enable: no-string-literal
 
   private _registerEventListeners() {
-    this._infoWindowManager.createEventObservable('closeclick', this).subscribe(() => {
+    this._eventSubscriptions.push(this._infoWindowManager.createEventObservable('closeclick', this).subscribe(() => {
       this.isOpen = false;
       this.infoWindowClose.emit();
-    });
+    }));
   }
 
   private _updateOpenState() {
@@ -165,5 +167,8 @@ export class AgmInfoWindow implements OnDestroy, OnChanges, OnInit {
   toString(): string { return 'AgmInfoWindow-' + this._id.toString(); }
 
   /** @internal */
-  ngOnDestroy() { this._infoWindowManager.deleteInfoWindow(this); }
+  ngOnDestroy() {
+    this._infoWindowManager.deleteInfoWindow(this);
+    this._eventSubscriptions.forEach(subscription => subscription.unsubscribe());
+  }
 }

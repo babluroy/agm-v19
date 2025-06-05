@@ -9,8 +9,9 @@ let layerId = 0;
  * */
 @Directive({
     selector: 'agm-transit-layer',
+    standalone: true,
 })
-export class AgmTransitLayer implements OnInit, OnDestroy{
+export class AgmTransitLayer implements OnInit, OnDestroy {
     private _addedToManager = false;
     private _id: string = (layerId++).toString();
 

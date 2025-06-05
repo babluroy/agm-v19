@@ -47,7 +47,7 @@ export class MvcArrayMock<T> implements google.maps.MVCArray<T> {
     this.listeners.insert_at.forEach(listener => listener(i));
   }
   pop(): T {
-    const deleted = this.vals.pop();
+    const deleted = this.vals.pop() as T;
     this.listeners.remove_at.forEach(listener => listener(this.vals.length, deleted));
     return deleted;
   }
@@ -57,7 +57,7 @@ export class MvcArrayMock<T> implements google.maps.MVCArray<T> {
     return this.vals.length;
   }
   removeAt(i: number): T {
-    const deleted = this.vals.splice(i, 1)[0];
+    const deleted = this.vals.splice(i, 1)[0] as T;
     this.listeners.remove_at.forEach(listener => listener(i, deleted));
     return deleted;
   }

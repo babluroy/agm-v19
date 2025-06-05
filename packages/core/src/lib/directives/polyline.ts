@@ -4,7 +4,6 @@ import { Subscription } from 'rxjs';
 import { PolylineManager } from '../services/managers/polyline-manager';
 import { MVCEvent } from '../utils/mvcarray-utils';
 import { AgmPolylineIcon } from './polyline-icon';
-import { AgmPolylinePoint } from './polyline-point';
 
 let polylineId = 0;
 /**
@@ -36,6 +35,7 @@ let polylineId = 0;
  */
 @Directive({
   selector: 'agm-polyline',
+  standalone: true,
 })
 export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
   /**
@@ -67,17 +67,17 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
   /**
    * The stroke color. All CSS3 colors are supported except for extended named colors.
    */
-  @Input() strokeColor: string;
+  @Input() strokeColor: string = '';
 
   /**
    * The stroke opacity between 0.0 and 1.0.
    */
-  @Input() strokeOpacity: number;
+  @Input() strokeOpacity: number = 0;
 
   /**
    * The stroke width in pixels.
    */
-  @Input() strokeWeight: number;
+  @Input() strokeWeight: number = 0;
 
   /**
    * Whether this polyline is visible on the map. Defaults to true.
@@ -87,7 +87,7 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
   /**
    * The zIndex compared to other polys.
    */
-  @Input() zIndex: number;
+  @Input() zIndex: number = 0;
 
   /**
    * This event is fired when the DOM click event is fired on the Polyline.
@@ -102,17 +102,17 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
   /**
    * This event is repeatedly fired while the user drags the polyline.
    */
-  @Output() lineDrag: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() lineDrag: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user stops dragging the polyline.
    */
-  @Output() lineDragEnd: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() lineDragEnd: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user starts dragging the polyline.
    */
-  @Output() lineDragStart: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() lineDragStart: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the DOM mousedown event is fired on the Polyline.
@@ -152,9 +152,9 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
   /**
    * @internal
    */
-  @ContentChildren(AgmPolylinePoint) points: QueryList<AgmPolylinePoint>;
+  @Input() points: google.maps.LatLngLiteral[] = [];
 
-  @ContentChildren(AgmPolylineIcon) iconSequences: QueryList<AgmPolylineIcon>;
+  @ContentChildren(AgmPolylineIcon) iconSequences: QueryList<AgmPolylineIcon> = new QueryList<AgmPolylineIcon>();
 
   private static _polylineOptionsAttributes: string[] = [
     'draggable', 'editable', 'visible', 'geodesic', 'strokeColor', 'strokeOpacity', 'strokeWeight',
@@ -169,20 +169,9 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
 
   /** @internal */
   ngAfterContentInit() {
-    if (this.points.length) {
-      this.points.forEach((point: AgmPolylinePoint) => {
-        const s = point.positionChanged.subscribe(
-            () => { this._polylineManager.updatePolylinePoints(this); });
-        this._subscriptions.push(s);
-      });
-    }
     if (!this._polylineAddedToManager) {
       this._init();
     }
-    const pointSub = this.points.changes.subscribe(() => this._polylineManager.updatePolylinePoints(this));
-    this._subscriptions.push(pointSub);
-    this._polylineManager.updatePolylinePoints(this);
-
     const iconSub = this.iconSequences.changes.subscribe(() => this._polylineManager.updateIconSequences(this));
     this._subscriptions.push(iconSub);
   }
@@ -214,9 +203,9 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
     const handlers = [
       {name: 'click', handler: (ev: google.maps.PolyMouseEvent) => this.lineClick.emit(ev)},
       {name: 'dblclick', handler: (ev: google.maps.PolyMouseEvent) => this.lineDblClick.emit(ev)},
-      {name: 'drag', handler: (ev: google.maps.MouseEvent) => this.lineDrag.emit(ev)},
-      {name: 'dragend', handler: (ev: google.maps.MouseEvent) => this.lineDragEnd.emit(ev)},
-      {name: 'dragstart', handler: (ev: google.maps.MouseEvent) => this.lineDragStart.emit(ev)},
+      {name: 'drag', handler: (ev: google.maps.MapMouseEvent) => this.lineDrag.emit(ev)},
+      {name: 'dragend', handler: (ev: google.maps.MapMouseEvent) => this.lineDragEnd.emit(ev)},
+      {name: 'dragstart', handler: (ev: google.maps.MapMouseEvent) => this.lineDragStart.emit(ev)},
       {name: 'mousedown', handler: (ev: google.maps.PolyMouseEvent) => this.lineMouseDown.emit(ev)},
       {name: 'mousemove', handler: (ev: google.maps.PolyMouseEvent) => this.lineMouseMove.emit(ev)},
       {name: 'mouseout', handler: (ev: google.maps.PolyMouseEvent) => this.lineMouseOut.emit(ev)},
@@ -235,19 +224,8 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
     });
   }
 
-  /** @internal */
-  _getPoints(): AgmPolylinePoint[] {
-    if (this.points) {
-      return this.points.toArray();
-    }
-    return [];
-  }
-
   _getIcons(): Array<AgmPolylineIcon> {
-    if (this.iconSequences) {
-      return this.iconSequences.toArray();
-    }
-    return [];
+    return this.iconSequences.toArray();
   }
 
   /** @internal */

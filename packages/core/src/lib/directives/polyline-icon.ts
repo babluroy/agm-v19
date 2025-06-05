@@ -15,29 +15,32 @@ import { Directive, Input, OnInit } from '@angular/core';
  *    </agm-map>
  * ```
  */
-@Directive({selector: 'agm-polyline agm-icon-sequence'})
-export class AgmPolylineIcon implements OnInit{
+@Directive({
+  selector: 'agm-polyline-icon',
+  standalone: true,
+})
+export class AgmPolylineIcon implements OnInit {
 
   /**
    * If `true`, each icon in the sequence has the same fixed rotation regardless of the
    * angle of the edge on which it lies. Defaults to `false`, in which case each icon
    * in the sequence is rotated to align with its edge.
    */
-  @Input() fixedRotation: boolean;
+  @Input() fixedRotation: boolean = false;
 
   /**
    * The distance from the start of the line at which an icon is to be rendered. This
    * distance may be expressed as a percentage of line's length (e.g. '50%') or in pixels
    * (e.g. '50px'). Defaults to '100%'.
    */
-  @Input() offset: string;
+  @Input() offset: string = '';
 
   /**
    * The distance between consecutive icons on the line. This distance may be expressed as
    * a percentage of the line's length (e.g. '50%') or in pixels (e.g. '50px'). To disable
    * repeating of the icon, specify '0'. Defaults to '0'.
    */
-  @Input() repeat: string;
+  @Input() repeat: string = '';
 
   /**
    * The x coordinate of the position of the symbol relative to the polyline. The coordinate
@@ -45,7 +48,7 @@ export class AgmPolylineIcon implements OnInit{
    * symbol is anchored at (0, 0). The position is expressed in the same coordinate system as the
    * symbol's path.
    */
-  @Input() anchorX: number;
+  @Input() anchorX: number = 0;
 
   /**
    * The y coordinate of the position of the symbol relative to the polyline. The coordinate
@@ -53,54 +56,54 @@ export class AgmPolylineIcon implements OnInit{
    * symbol is anchored at (0, 0). The position is expressed in the same coordinate system as the
    * symbol's path.
    */
-  @Input() anchorY: number;
+  @Input() anchorY: number = 0;
 
   /**
    * The symbol's fill color. All CSS3 colors are supported except for extended named
    * colors. Defaults to the stroke color of the corresponding polyline.
    */
-  @Input() fillColor: string;
+  @Input() fillColor: string = '';
 
   /**
    * The symbol's fill opacity. Defaults to 0.
    */
-  @Input() fillOpacity: number;
+  @Input() fillOpacity: number = 0;
 
   /**
    * The symbol's path, which is a built-in symbol path, or a custom path expressed using
    * SVG path notation. Required.
    */
-  @Input() path: keyof typeof google.maps.SymbolPath | string;
+  @Input() path: string = '';
 
   /**
    * The angle by which to rotate the symbol, expressed clockwise in degrees.
    * Defaults to 0. A symbol where `fixedRotation` is `false` is rotated relative to
    * the angle of the edge on which it lies.
    */
-  @Input() rotation: number;
+  @Input() rotation: number = 0;
 
   /**
    * The amount by which the symbol is scaled in size. Defaults to the stroke weight
    * of the polyline; after scaling, the symbol must lie inside a square 22 pixels in
    * size centered at the symbol's anchor.
    */
-  @Input() scale: number;
+  @Input() scale: number = 0;
 
   /**
    * The symbol's stroke color. All CSS3 colors are supported except for extended named
    * colors. Defaults to the stroke color of the polyline.
    */
-  @Input() strokeColor: string;
+  @Input() strokeColor: string = '';
 
   /**
    * The symbol's stroke opacity. Defaults to the stroke opacity of the polyline.
    */
-  @Input() strokeOpacity: number;
+  @Input() strokeOpacity: number = 0;
 
   /**
    * The symbol's stroke weight. Defaults to the scale of the symbol.
    */
-  @Input() strokeWeight: number;
+  @Input() strokeWeight: number = 0;
 
   ngOnInit(): void {
     if (this.path == null) {

@@ -1,9 +1,12 @@
 import { Directive, EventEmitter, Input, isDevMode, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { fromEventPattern, Observable, Subscription } from 'rxjs';
 
+declare var google: any;
+
 @Directive({
   selector: 'agm-drawing-manager',
   exportAs: 'agmDrawingManager',
+  standalone: true,
 })
 export class AgmDrawingManager implements OnChanges, OnDestroy{
 
@@ -11,20 +14,20 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * The enabled/disabled state of the drawing control. Defaults to `true`.
    *
    */
-  @Input() drawingControl: boolean;
+  @Input() drawingControl!: boolean;
 
   /**
    * The DrawingManager's drawing mode, which defines the type of overlay to be
    * added on the map. A drawing mode of null means that the user can interact
    * with the map as normal, and clicks do not draw anything.
    */
-  @Input() drawingMode: google.maps.drawing.OverlayType | null;
+  @Input() drawingMode!: google.maps.drawing.OverlayType | null;
 
   /**
    * The display options for the drawing control.
    *
    */
-  @Input() drawingControlOptions: google.maps.drawing.DrawingControlOptions;
+  @Input() drawingControlOptions!: google.maps.drawing.DrawingControlOptions;
 
   /**
    * Options to apply to any new circles created with this DrawingManager.
@@ -32,7 +35,7 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * new circle is always set to the DrawingManager's map.
    *
    */
-  @Input() circleOptions: google.maps.CircleOptions;
+  @Input() circleOptions!: google.maps.CircleOptions;
 
   /**
    * Options to apply to any new markers created with this DrawingManager.
@@ -40,7 +43,7 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * is always set to the DrawingManager's map.
    *
    */
-  @Input() markerOptions: google.maps.MarkerOptions;
+  @Input() markerOptions!: google.maps.MarkerOptions;
 
   /**
    * Options to apply to any new polygons created with this DrawingManager.
@@ -48,7 +51,7 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * always set to the DrawingManager's map.
    *
    */
-  @Input() polygonOptions: google.maps.PolygonOptions;
+  @Input() polygonOptions!: google.maps.PolygonOptions;
 
   /**
    * Options to apply to any new polylines created with this DrawingManager.
@@ -56,7 +59,7 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * always set to the DrawingManager's map.
    *
    */
-  @Input() polylineOptions: google.maps.PolylineOptions;
+  @Input() polylineOptions!: google.maps.PolylineOptions;
 
   /**
    * Options to apply to any new rectangles created with this DrawingManager.
@@ -64,7 +67,7 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * is always set to the DrawingManager's map.
    *
    */
-  @Input() rectangleOptions: google.maps.RectangleOptions;
+  @Input() rectangleOptions!: google.maps.RectangleOptions;
 
   /**
    * This event is fired when the user has finished drawing a circle.
@@ -99,7 +102,7 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
 
   private eventSubscriptions: Subscription[] = [];
 
-  private drawingManager: google.maps.drawing.DrawingManager;
+  private drawingManager!: google.maps.drawing.DrawingManager;
 
   constructor(private _zone: NgZone) {
   }

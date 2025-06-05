@@ -3,9 +3,9 @@ import { NgModule } from '@angular/core';
 import { AgmMarkerCluster } from './directives/marker-cluster';
 
 @NgModule({
-  imports: [AgmCoreModule],
-  declarations: [AgmMarkerCluster],
-  exports: [AgmMarkerCluster],
+  imports: [AgmCoreModule, AgmMarkerCluster],
+  declarations: [],
+  exports: [],
 })
 export class AgmMarkerClustererModule {
 }

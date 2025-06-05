@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { bindCallback, connectable, Connectable, Observable, of, ReplaySubject, throwError } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { connectable, Connectable, Observable, of, ReplaySubject, throwError, defer, bindCallback } from 'rxjs';
+import { map, switchMap, catchError } from 'rxjs/operators';
 import { MapsAPILoader } from './maps-api-loader/maps-api-loader';
 
 @Injectable({providedIn: 'root'})
@@ -9,7 +9,7 @@ export class AgmGeocoder {
 
   constructor(loader: MapsAPILoader) {
     const connectableGeocoder$: Connectable<google.maps.Geocoder> = connectable(new Observable(subscriber => {
-      loader.load().then(() => subscriber.next());
+      loader.load().then(() => subscriber.next(undefined));
     }).pipe(map(() => this._createGeocoder())), {connector: () => new ReplaySubject(1)});
 
     connectableGeocoder$.connect(); // ignore the subscription
@@ -26,15 +26,17 @@ export class AgmGeocoder {
 
   private _getGoogleResults(geocoder: google.maps.Geocoder, request: google.maps.GeocoderRequest):
     Observable<google.maps.GeocoderResult[]> {
-    const geocodeObservable = bindCallback(geocoder.geocode);
-    return geocodeObservable(request).pipe(
+    const geocodeCallback = bindCallback<[google.maps.GeocoderRequest], [google.maps.GeocoderResult[] | null, google.maps.GeocoderStatus]>(
+      geocoder.geocode.bind(geocoder)
+    );
+    return defer(() => geocodeCallback(request)).pipe(
       switchMap(([results, status]) => {
-        if (status === google.maps.GeocoderStatus.OK) {
+        if (status === 'OK' && results) {
           return of(results);
         }
-
-        return throwError(status);
-      })
+        return throwError(() => status);
+      }),
+      catchError((err) => throwError(() => err))
     );
   }
 

@@ -32,14 +32,14 @@ export class DataLayerManager {
   }
 
   deleteDataLayer(layer: AgmDataLayer) {
-    this._layers.get(layer).then(l => {
+    this._layers.get(layer)!.then(l => {
       l.setMap(null);
       this._layers.delete(layer);
     });
   }
 
   updateGeoJson(layer: AgmDataLayer, geoJson: object | string) {
-    this._layers.get(layer).then(l => {
+    this._layers.get(layer)!.then(l => {
       l.forEach(feature => {
         l.remove(feature);
 
@@ -53,13 +53,20 @@ export class DataLayerManager {
     });
   }
 
-  setDataOptions(layer: AgmDataLayer, options: google.maps.Data.DataOptions)
-  {
-    this._layers.get(layer).then(l => {
-      l.setControlPosition(options.controlPosition);
-      l.setControls(options.controls);
-      l.setDrawingMode(options.drawingMode);
-      l.setStyle(options.style);
+  setDataOptions(layer: AgmDataLayer, options: google.maps.Data.DataOptions) {
+    this._layers.get(layer)!.then(l => {
+      if (options.controlPosition) {
+        l.setControlPosition(options.controlPosition);
+      }
+      if (options.controls) {
+        l.setControls(options.controls);
+      }
+      if (options.drawingMode) {
+        l.setDrawingMode(options.drawingMode);
+      }
+      if (options.style) {
+        l.setStyle(options.style);
+      }
     });
   }
 
@@ -68,8 +75,8 @@ export class DataLayerManager {
    */
   createEventObservable<T>(eventName: string, layer: AgmDataLayer): Observable<T> {
     return new Observable((observer: Observer<T>) => {
-      this._layers.get(layer).then((d: google.maps.Data) => {
-        d.addListener(eventName, (e: T) => this._zone.run(() => observer.next(e)));
+      this._layers.get(layer)!.then((d: google.maps.Data) => {
+        d.addListener(eventName, (e: any) => this._zone.run(() => observer.next(e as T)));
       });
     });
   }
@@ -94,5 +101,11 @@ export class DataLayerManager {
           reject(`Impossible to extract features from geoJson: wrong argument type`);
         }
       });
+  }
+
+  loadGeoJson(layer: AgmDataLayer, url: string, options?: google.maps.Data.GeoJsonOptions): void {
+    this._layers.get(layer)!.then((d: google.maps.Data) => {
+      d.loadGeoJson(url, options);
+    });
   }
 }

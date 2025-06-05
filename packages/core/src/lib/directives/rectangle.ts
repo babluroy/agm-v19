@@ -13,27 +13,28 @@ import { RectangleManager } from '../services/managers/rectangle-manager';
 
 @Directive({
   selector: 'agm-rectangle',
+  standalone: true,
 })
 export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
   /**
    * The north position of the rectangle (required).
    */
-  @Input() north: number;
+  @Input() north: number = 0;
 
   /**
    * The east position of the rectangle (required).
    */
-  @Input() east: number;
+  @Input() east: number = 0;
 
   /**
    * The south position of the rectangle (required).
    */
-  @Input() south: number;
+  @Input() south: number = 0;
 
   /**
    * The west position of the rectangle (required).
    */
-  @Input() west: number;
+  @Input() west: number = 0;
 
   /**
    * Indicates whether this Rectangle handles mouse events. Defaults to true.
@@ -55,22 +56,22 @@ export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
   /**
    * The fill color. All CSS3 colors are supported except for extended named colors.
    */
-  @Input() fillColor: string;
+  @Input() fillColor: string = '';
 
   /**
    * The fill opacity between 0.0 and 1.0.
    */
-  @Input() fillOpacity: number;
+  @Input() fillOpacity: number = 0;
 
   /**
    * The stroke color. All CSS3 colors are supported except for extended named colors.
    */
-  @Input() strokeColor: string;
+  @Input() strokeColor: string = '';
 
   /**
    * The stroke opacity between 0.0 and 1.0
    */
-  @Input() strokeOpacity: number;
+  @Input() strokeOpacity: number = 0;
 
   /**
    * The stroke position. Defaults to CENTER.
@@ -81,17 +82,17 @@ export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
   /**
    * The stroke width in pixels.
    */
-  @Input() strokeWeight = 0;
+  @Input() strokeWeight: number = 0;
 
   /**
    * Whether this rectangle is visible on the map. Defaults to true.
    */
-  @Input() visible = true;
+  @Input() visible: boolean = true;
 
   /**
    * The zIndex compared to other polys.
    */
-  @Input() zIndex: number;
+  @Input() zIndex: number = 0;
 
   /**
    * This event is fired when the rectangle's is changed.
@@ -105,64 +106,64 @@ export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
    * This event emitter gets emitted when the user clicks on the rectangle.
    */
   @Output()
-  rectangleClick: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  rectangleClick: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event emitter gets emitted when the user clicks on the rectangle.
    */
   @Output()
-  rectangleDblClick: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  rectangleDblClick: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is repeatedly fired while the user drags the rectangle.
    */
   // tslint:disable-next-line: no-output-native
-  @Output() drag: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() drag: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user stops dragging the rectangle.
    */
-  @Output() dragEnd: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() dragEnd: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user starts dragging the rectangle.
    */
   @Output()
-  dragStart: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  dragStart: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the DOM mousedown event is fired on the rectangle.
    */
   @Output()
-  mouseDown: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  mouseDown: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the DOM mousemove event is fired on the rectangle.
    */
   @Output()
-  mouseMove: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  mouseMove: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired on rectangle mouseout.
    */
-  @Output() mouseOut: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() mouseOut: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired on rectangle mouseover.
    */
   @Output()
-  mouseOver: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  mouseOver: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the DOM mouseup event is fired on the rectangle.
    */
-  @Output() mouseUp: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  @Output() mouseUp: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the rectangle is right-clicked on.
    */
   @Output()
-  rightClick: EventEmitter<google.maps.MouseEvent> = new EventEmitter<google.maps.MouseEvent>();
+  rightClick: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
 
   private _rectangleAddedToManager = false;
 
@@ -219,12 +220,12 @@ export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
   private _updateRectangleOptionsChanges(changes: {
     [propName: string]: SimpleChange;
   }) {
-    const options: google.maps.RectangleOptions = {};
+    const options: Partial<google.maps.RectangleOptions> = {};
     const optionKeys = Object.keys(changes).filter(
       k => AgmRectangle._mapOptions.indexOf(k) !== -1,
     );
     optionKeys.forEach(k => {
-      options[k] = changes[k].currentValue;
+      (options as any)[k] = changes[k].currentValue;
     });
 
     if (optionKeys.length > 0) {
@@ -253,7 +254,7 @@ export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
     events.forEach((eventEmitter, eventName) => {
       this._eventSubscriptions.push(
         this._manager
-          .createEventObservable<google.maps.MouseEvent>(eventName, this)
+          .createEventObservable<google.maps.MapMouseEvent>(eventName, this)
           .subscribe(value => {
             switch (eventName) {
               case 'bounds_changed':
@@ -277,7 +278,7 @@ export class AgmRectangle implements OnInit, OnChanges, OnDestroy {
   /** @internal */
   ngOnDestroy() {
     this._eventSubscriptions.forEach(s => s.unsubscribe());
-    this._eventSubscriptions = null;
+    this._eventSubscriptions = [];
     this._manager.removeRectangle(this);
   }
 

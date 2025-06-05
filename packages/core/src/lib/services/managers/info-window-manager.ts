@@ -30,19 +30,30 @@ export class InfoWindowManager {
   }
 
   setPosition(infoWindow: AgmInfoWindow): Promise<void> {
-    return this._infoWindows.get(infoWindow).then((i: google.maps.InfoWindow) => i.setPosition({
+    const infoWindowPromise = this._infoWindows.get(infoWindow);
+    if (!infoWindowPromise) {
+      return Promise.reject(new Error('InfoWindow not found'));
+    }
+    return infoWindowPromise.then((i: google.maps.InfoWindow) => i.setPosition({
       lat: infoWindow.latitude,
       lng: infoWindow.longitude,
     }));
   }
 
   setZIndex(infoWindow: AgmInfoWindow): Promise<void> {
-    return this._infoWindows.get(infoWindow)
-        .then((i: google.maps.InfoWindow) => i.setZIndex(infoWindow.zIndex));
+    const infoWindowPromise = this._infoWindows.get(infoWindow);
+    if (!infoWindowPromise) {
+      return Promise.reject(new Error('InfoWindow not found'));
+    }
+    return infoWindowPromise.then((i: google.maps.InfoWindow) => i.setZIndex(infoWindow.zIndex));
   }
 
   open(infoWindow: AgmInfoWindow): Promise<void> {
-    return this._infoWindows.get(infoWindow).then((w) => {
+    const infoWindowPromise = this._infoWindows.get(infoWindow);
+    if (!infoWindowPromise) {
+      return Promise.reject(new Error('InfoWindow not found'));
+    }
+    return infoWindowPromise.then((w) => {
       if (infoWindow.hostMarker != null) {
         return this._markerManager.getNativeMarker(infoWindow.hostMarker).then((marker) => {
           return this._mapsWrapper.getNativeMap().then((map) => w.open(map, marker));
@@ -53,11 +64,19 @@ export class InfoWindowManager {
   }
 
   close(infoWindow: AgmInfoWindow): Promise<void> {
-    return this._infoWindows.get(infoWindow).then((w) => w.close());
+    const infoWindowPromise = this._infoWindows.get(infoWindow);
+    if (!infoWindowPromise) {
+      return Promise.reject(new Error('InfoWindow not found'));
+    }
+    return infoWindowPromise.then((w) => w.close());
   }
 
   setOptions(infoWindow: AgmInfoWindow, options: google.maps.InfoWindowOptions) {
-    return this._infoWindows.get(infoWindow).then((i: google.maps.InfoWindow) => i.setOptions(options));
+    const infoWindowPromise = this._infoWindows.get(infoWindow);
+    if (!infoWindowPromise) {
+      return Promise.reject(new Error('InfoWindow not found'));
+    }
+    return infoWindowPromise.then((i: google.maps.InfoWindow) => i.setOptions(options));
   }
 
   addInfoWindow(infoWindow: AgmInfoWindow) {
@@ -79,8 +98,16 @@ export class InfoWindowManager {
     */
   createEventObservable<T>(eventName: string, infoWindow: AgmInfoWindow): Observable<T> {
     return new Observable((observer: Observer<T>) => {
-      this._infoWindows.get(infoWindow).then((i: google.maps.InfoWindow) => {
-        i.addListener(eventName, (e: T) => this._zone.run(() => observer.next(e)));
+      const infoWindowPromise = this._infoWindows.get(infoWindow);
+      if (!infoWindowPromise) {
+        observer.error(new Error('InfoWindow not found'));
+        return;
+      }
+      infoWindowPromise.then((i: google.maps.InfoWindow) => {
+        i.addListener(eventName, (...args: unknown[]) => {
+          const event = args[0] as T;
+          this._zone.run(() => observer.next(event));
+        });
       });
     });
   }
