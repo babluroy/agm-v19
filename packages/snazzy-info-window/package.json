@@ -22,11 +22,19 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
-    "@babluroy/agm-core": "4.0.0-beta.7",
+    "@angular/forms": "^19.0.0",
+    "@angular/platform-browser": "^19.0.0",
+    "@angular/platform-browser-dynamic": "^19.0.0",
+    "@angular/router": "^19.0.0",
+    "@babluroy/agm-core": "workspace:*",
+    "@types/googlemaps": "^3.43.3",
     "snazzy-info-window": "^1.1.0",
     "tslib": "^2.6.2"
   },
   "devDependencies": {
-    "@babluroy/agm-core": "4.0.0-beta.7"
+    "@angular/common": "^19.0.0",
+    "@angular/core": "^19.0.0",
+    "@babluroy/agm-core": "workspace:*",
+    "tslib": "^2.6.2"
   }
 }
