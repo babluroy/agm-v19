@@ -14,20 +14,29 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * The enabled/disabled state of the drawing control. Defaults to `true`.
    *
    */
-  @Input() drawingControl!: boolean;
+  @Input() drawingControl: boolean = true;
 
   /**
    * The DrawingManager's drawing mode, which defines the type of overlay to be
    * added on the map. A drawing mode of null means that the user can interact
    * with the map as normal, and clicks do not draw anything.
    */
-  @Input() drawingMode!: google.maps.drawing.OverlayType | null;
+  @Input() drawingMode: google.maps.drawing.OverlayType | null = null;
 
   /**
    * The display options for the drawing control.
    *
    */
-  @Input() drawingControlOptions!: google.maps.drawing.DrawingControlOptions;
+  @Input() drawingControlOptions: google.maps.drawing.DrawingControlOptions = {
+    position: google.maps.ControlPosition.TOP_CENTER,
+    drawingModes: [
+      google.maps.drawing.OverlayType.MARKER,
+      google.maps.drawing.OverlayType.CIRCLE,
+      google.maps.drawing.OverlayType.POLYGON,
+      google.maps.drawing.OverlayType.POLYLINE,
+      google.maps.drawing.OverlayType.RECTANGLE
+    ]
+  };
 
   /**
    * Options to apply to any new circles created with this DrawingManager.
@@ -35,7 +44,14 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * new circle is always set to the DrawingManager's map.
    *
    */
-  @Input() circleOptions!: google.maps.CircleOptions;
+  @Input() circleOptions: google.maps.CircleOptions = {
+    fillColor: '#FF0000',
+    fillOpacity: 0.35,
+    strokeWeight: 2,
+    clickable: true,
+    editable: true,
+    zIndex: 1
+  };
 
   /**
    * Options to apply to any new markers created with this DrawingManager.
@@ -43,7 +59,9 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * is always set to the DrawingManager's map.
    *
    */
-  @Input() markerOptions!: google.maps.MarkerOptions;
+  @Input() markerOptions: google.maps.MarkerOptions = {
+    draggable: true
+  };
 
   /**
    * Options to apply to any new polygons created with this DrawingManager.
@@ -51,7 +69,14 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * always set to the DrawingManager's map.
    *
    */
-  @Input() polygonOptions!: google.maps.PolygonOptions;
+  @Input() polygonOptions: google.maps.PolygonOptions = {
+    fillColor: '#FF0000',
+    fillOpacity: 0.35,
+    strokeWeight: 2,
+    clickable: true,
+    editable: true,
+    zIndex: 1
+  };
 
   /**
    * Options to apply to any new polylines created with this DrawingManager.
@@ -59,7 +84,14 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * always set to the DrawingManager's map.
    *
    */
-  @Input() polylineOptions!: google.maps.PolylineOptions;
+  @Input() polylineOptions: google.maps.PolylineOptions = {
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2,
+    clickable: true,
+    editable: true,
+    zIndex: 1
+  };
 
   /**
    * Options to apply to any new rectangles created with this DrawingManager.
@@ -67,7 +99,14 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * is always set to the DrawingManager's map.
    *
    */
-  @Input() rectangleOptions!: google.maps.RectangleOptions;
+  @Input() rectangleOptions: google.maps.RectangleOptions = {
+    fillColor: '#FF0000',
+    fillOpacity: 0.35,
+    strokeWeight: 2,
+    clickable: true,
+    editable: true,
+    zIndex: 1
+  };
 
   /**
    * This event is fired when the user has finished drawing a circle.

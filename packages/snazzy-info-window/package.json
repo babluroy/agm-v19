@@ -1,17 +1,17 @@
 {
   "name": "@babluroy/agm-snazzy-info-window",
-  "version": "4.0.0-beta.9",
-  "description": "Angular Google Maps (AGM) package for Snazzy Info Window support",
+  "version": "4.0.0-beta.21",
+  "description": "Angular Google Maps (AGM) extension for Snazzy Info Window",
   "author": "Sebastian Holstein <info@sebastian-holstein.de>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SebastianM/angular-google-maps.git"
+    "url": "git+https://github.com/SebastianM/angular-google-maps.git"
   },
   "bugs": {
     "url": "https://github.com/SebastianM/angular-google-maps/issues"
   },
-  "homepage": "https://angular-maps.com",
+  "homepage": "https://github.com/SebastianM/angular-google-maps#readme",
   "keywords": [
     "angular-google-maps",
     "angular",
@@ -22,19 +22,17 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
-    "@angular/forms": "^19.0.0",
-    "@angular/platform-browser": "^19.0.0",
-    "@angular/platform-browser-dynamic": "^19.0.0",
-    "@angular/router": "^19.0.0",
-    "@babluroy/agm-core": "workspace:*",
-    "@types/googlemaps": "^3.43.3",
-    "snazzy-info-window": "^1.1.0",
-    "tslib": "^2.6.2"
+    "@babluroy/agm-core": "4.0.0-beta.19",
+    "snazzy-info-window": "^1.1.0"
   },
   "devDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
     "@babluroy/agm-core": "workspace:*",
     "tslib": "^2.6.2"
-  }
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
 }

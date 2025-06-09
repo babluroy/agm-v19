@@ -1,20 +1,20 @@
 {
   "name": "@babluroy/agm-drawing",
-  "version": "4.0.0-beta.17",
-  "description": "Angular Google Maps (AGM) extension for google maps drawing library",
-  "author": "Feliks Khantsis",
+  "version": "4.0.0-beta.21",
+  "description": "Angular Google Maps (AGM) extension for drawing manager",
+  "author": "Sebastian Holstein <info@sebastian-holstein.de>",
   "license": "MIT",
   "types": "./index.d.ts",
   "main": "./index.js",
   "module": "./fesm2022/babluroy-agm-drawing.mjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SebastianM/angular-google-maps.git"
+    "url": "git+https://github.com/SebastianM/angular-google-maps.git"
   },
   "bugs": {
     "url": "https://github.com/SebastianM/angular-google-maps/issues"
   },
-  "homepage": "https://angular-maps.com",
+  "homepage": "https://github.com/SebastianM/angular-google-maps#readme",
   "keywords": [
     "angular-google-maps",
     "angular",
@@ -25,17 +25,15 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
-    "@angular/forms": "^19.0.0",
-    "@angular/platform-browser": "^19.0.0",
-    "@angular/platform-browser-dynamic": "^19.0.0",
-    "@angular/router": "^19.0.0",
-    "@babluroy/agm-core": "^4.0.0-beta.15",
-    "@types/googlemaps": "^3.43.3",
-    "tslib": "^2.6.2"
+    "@babluroy/agm-core": "4.0.0-beta.19"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
     "tslib": "^2.6.2"
-  }
+  },
+  "sideEffects": false
 }

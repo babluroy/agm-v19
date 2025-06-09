@@ -1,9 +1,10 @@
-import { isPlatformServer } from '@angular/common';
 import { AfterContentInit, Component, ContentChildren, Directive, ElementRef, EventEmitter, Inject, Input, NgZone, OnChanges, OnDestroy, Output, PLATFORM_ID, QueryList, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
-
+import { AgmDrawingManager } from '@babluroy/agm-drawing';
 import { FitBoundsService } from '../services/fit-bounds';
 import { GoogleMapsAPIWrapper } from '../services/google-maps-api-wrapper';
+
+import { isPlatformServer } from '@angular/common';
 import { CircleManager } from '../services/managers/circle-manager';
 import { InfoWindowManager } from '../services/managers/info-window-manager';
 import { LayerManager } from '../services/managers/layer-manager';
@@ -206,6 +207,7 @@ export class AgmMap implements OnChanges, AfterContentInit, OnDestroy {
   @Input() draggingCursor: string = '';
   @Input() fitBoundsPadding: number | google.maps.Padding = 0;
   @Input() restriction: google.maps.MapRestriction | undefined = undefined;
+  @Input('agmDrawingManager') drawingManager: AgmDrawingManager | undefined;
 
   private _fitBoundsSubscription: Subscription | undefined = undefined;
   @ContentChildren(AgmMapControl) mapControls: QueryList<AgmMapControl> = new QueryList<AgmMapControl>();

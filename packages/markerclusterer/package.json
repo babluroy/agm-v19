@@ -1,6 +1,6 @@
 {
   "name": "@babluroy/agm-markerclusterer",
-  "version": "4.0.0-beta.9",
+  "version": "4.0.0-beta.11",
   "description": "Angular Google Maps (AGM) extension for markerclusterer support",
   "author": "Jens Fahnenbruck <jigfox@me.com>",
   "license": "MIT",
