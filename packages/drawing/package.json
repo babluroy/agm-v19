@@ -1,21 +1,12 @@
 {
   "name": "@babluroy/agm-drawing",
-  "version": "4.0.0-beta.11",
+  "version": "4.0.0-beta.17",
   "description": "Angular Google Maps (AGM) extension for google maps drawing library",
   "author": "Feliks Khantsis",
   "license": "MIT",
-  "types": "./dist/drawing/index.d.ts",
-  "main": "./dist/drawing/index.js",
-  "module": "fesm2022/babluroy-agm-drawing.mjs",
-  "exports": {
-    "./package.json": {
-      "default": "./package.json"
-    },
-    ".": {
-      "types": "./index.d.ts",
-      "default": "./fesm2022/babluroy-agm-drawing.mjs"
-    }
-  },
+  "types": "./index.d.ts",
+  "main": "./index.js",
+  "module": "./fesm2022/babluroy-agm-drawing.mjs",
   "repository": {
     "type": "git",
     "url": "https://github.com/SebastianM/angular-google-maps.git"
@@ -38,7 +29,7 @@
     "@angular/platform-browser": "^19.0.0",
     "@angular/platform-browser-dynamic": "^19.0.0",
     "@angular/router": "^19.0.0",
-    "@babluroy/agm-core": "workspace:*",
+    "@babluroy/agm-core": "^4.0.0-beta.15",
     "@types/googlemaps": "^3.43.3",
     "tslib": "^2.6.2"
   },

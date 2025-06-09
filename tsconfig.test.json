@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "types": [
+      "node",
+      "google.maps"
+    ],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "paths": {
+      "@babluroy/agm-drawing": ["./dist/drawing"]
+    }
+  },
+  "files": [
+    "temp-drawing-import-test.ts"
+  ]
+} 
