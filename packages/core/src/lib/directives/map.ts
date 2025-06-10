@@ -193,7 +193,7 @@ export class AgmMap implements OnChanges, AfterContentInit, OnDestroy {
   private static _mapOptionsAttributes: string[] = [
     'disableDoubleClickZoom', 'scrollwheel', 'draggable', 'draggableCursor', 'draggingCursor',
     'keyboardShortcuts', 'styles', 'zoom', 'minZoom', 'maxZoom', 'mapTypeId', 'clickableIcons',
-    'gestureHandling', 'tilt', 'restriction',
+    'gestureHandling', 'tilt', 'restriction', 'controlSize', 'backgroundColor',
   ];
 
   @Input() position: ControlPosition = 'TOP_RIGHT';

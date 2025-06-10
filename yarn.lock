@@ -2205,7 +2205,7 @@ __metadata:
   peerDependencies:
     "@angular/common": ^17.0.0
     "@angular/core": ^17.0.0
-    "@babluroy/agm-core": 4.0.0-beta.18
+    "@babluroy/agm-core": 4.0.0-beta.27
   languageName: unknown
   linkType: soft
 
@@ -2248,7 +2248,7 @@ __metadata:
     "@angular/platform-browser": ^19.0.0
     "@angular/platform-browser-dynamic": ^19.0.0
     "@angular/router": ^19.0.0
-    "@babluroy/agm-core": 4.0.0-beta.18
+    "@babluroy/agm-core": 4.0.0-beta.27
     "@types/googlemaps": ^3.43.3
     snazzy-info-window: ^1.1.0
     tslib: ^2.3.0

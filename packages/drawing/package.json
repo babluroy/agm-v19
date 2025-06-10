@@ -1,6 +1,6 @@
 {
   "name": "@babluroy/agm-drawing",
-  "version": "4.0.0-beta.24",
+  "version": "4.0.0-beta.27",
   "description": "Angular Google Maps (AGM) extension for drawing manager",
   "author": "Sebastian Holstein <info@sebastian-holstein.de>",
   "license": "MIT",
@@ -25,7 +25,7 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
-    "@babluroy/agm-core": "4.0.0-beta.19"
+    "@babluroy/agm-core": "4.0.0-beta.27"
   },
   "dependencies": {
     "tslib": "^2.3.0"

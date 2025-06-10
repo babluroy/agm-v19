@@ -27,16 +27,7 @@ export class AgmDrawingManager implements OnChanges, OnDestroy{
    * The display options for the drawing control.
    *
    */
-  @Input() drawingControlOptions: google.maps.drawing.DrawingControlOptions = {
-    position: google.maps.ControlPosition.TOP_CENTER,
-    drawingModes: [
-      google.maps.drawing.OverlayType.MARKER,
-      google.maps.drawing.OverlayType.CIRCLE,
-      google.maps.drawing.OverlayType.POLYGON,
-      google.maps.drawing.OverlayType.POLYLINE,
-      google.maps.drawing.OverlayType.RECTANGLE
-    ]
-  };
+  @Input() drawingControlOptions: google.maps.drawing.DrawingControlOptions | undefined;
 
   /**
    * Options to apply to any new circles created with this DrawingManager.

@@ -1,4 +1,4 @@
-Angular Google Maps (AGM) Core - Angular 2+ Google Maps components
+Angular Google Maps (AGM) Core - 16+ Google Maps components
 =========
 
 @agm/core contains solutions for the Google Maps JavaScript Core API.

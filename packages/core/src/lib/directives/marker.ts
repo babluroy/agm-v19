@@ -109,43 +109,47 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
   /**
    * This event emitter gets emitted when the user clicks on the marker.
    */
-  @Output() markerClick: EventEmitter<AgmMarker> = new EventEmitter<AgmMarker>();
+  @Output() markerClick = new EventEmitter<AgmMarker>();
 
   /**
    * This event emitter gets emitted when the user clicks twice on the marker.
    */
-  @Output() markerDblClick: EventEmitter<AgmMarker> = new EventEmitter<AgmMarker>();
+  @Output() markerDblClick = new EventEmitter<AgmMarker>();
 
   /**
    * This event is fired when the user rightclicks on the marker.
    */
-  @Output() markerRightClick: EventEmitter<void> = new EventEmitter<void>();
+  @Output() markerRightClick = new EventEmitter<void>();
 
   /**
    * This event is fired when the user starts dragging the marker.
    */
-  @Output() dragStart: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
+  @Output() dragStart = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is repeatedly fired while the user drags the marker.
    */
-  // tslint:disable-next-line: no-output-native
-  @Output() drag: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
+  @Output() drag = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user stops dragging the marker.
    */
-  @Output() dragEnd: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
+  @Output() dragEnd = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user mouses over the marker.
    */
-  @Output() mouseOver: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
+  @Output() mouseOver = new EventEmitter<google.maps.MapMouseEvent>();
 
   /**
    * This event is fired when the user mouses outside the marker.
    */
-  @Output() mouseOut: EventEmitter<google.maps.MapMouseEvent> = new EventEmitter<google.maps.MapMouseEvent>();
+  @Output() mouseOut = new EventEmitter<google.maps.MapMouseEvent>();
+
+  /**
+   * This event is fired when the marker's position changes.
+   */
+  @Output() positionChange = new EventEmitter<google.maps.LatLngLiteral>();
 
   /** @internal */
   @ContentChildren(AgmInfoWindow) infoWindow: QueryList<AgmInfoWindow> = new QueryList<AgmInfoWindow>();
@@ -191,10 +195,10 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
       this._addEventListeners();
       return;
     }
-    // tslint:disable: no-string-literal
     if (changes['latitude'] || changes['longitude']) {
       this._markerManager.updateMarkerPosition(this);
       this._updateFitBoundsDetails();
+      this.positionChange.emit({ lat: this.latitude, lng: this.longitude });
     }
     if (changes['title']) {
       this._markerManager.updateTitle(this);
@@ -223,8 +227,6 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
     if (changes['animation']) {
       this._markerManager.updateAnimation(this);
     }
-    // tslint:enable: no-string-literal
-
   }
 
   /** @internal */
@@ -246,46 +248,49 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
     this._eventSubscriptions.push(cs);
 
     const dcs = this._markerManager.createEventObservable('dblclick', this).subscribe(() => {
-      this.markerDblClick.emit();
+      this.markerDblClick.emit(this);
     });
     this._eventSubscriptions.push(dcs);
 
-    const rc = this._markerManager.createEventObservable('rightclick', this).subscribe(() => {
+    const rcs = this._markerManager.createEventObservable('rightclick', this).subscribe(() => {
       this.markerRightClick.emit();
     });
-    this._eventSubscriptions.push(rc);
+    this._eventSubscriptions.push(rcs);
 
-    const ds =
-        this._markerManager.createEventObservable<google.maps.MapMouseEvent>('dragstart', this)
-            .subscribe(e => this.dragStart.emit(e));
+    const ds = this._markerManager.createEventObservable('dragstart', this).subscribe((e: any) => {
+      this.dragStart.emit(e);
+    });
     this._eventSubscriptions.push(ds);
 
-    const d =
-        this._markerManager.createEventObservable<google.maps.MapMouseEvent>('drag', this)
-          .subscribe(e => this.drag.emit(e));
+    const d = this._markerManager.createEventObservable('drag', this).subscribe((e: any) => {
+      this.drag.emit(e);
+    });
     this._eventSubscriptions.push(d);
 
-    const de =
-        this._markerManager.createEventObservable<google.maps.MapMouseEvent>('dragend', this)
-          .subscribe(e => this.dragEnd.emit(e));
+    const de = this._markerManager.createEventObservable('dragend', this).subscribe((e: any) => {
+      this.dragEnd.emit(e);
+    });
     this._eventSubscriptions.push(de);
 
-    const mover =
-        this._markerManager.createEventObservable<google.maps.MapMouseEvent>('mouseover', this)
-          .subscribe(e => this.mouseOver.emit(e));
-    this._eventSubscriptions.push(mover);
+    const mo = this._markerManager.createEventObservable('mouseover', this).subscribe((e: any) => {
+      this.mouseOver.emit(e);
+    });
+    this._eventSubscriptions.push(mo);
 
-    const mout =
-        this._markerManager.createEventObservable<google.maps.MapMouseEvent>('mouseout', this)
-          .subscribe(e => this.mouseOut.emit(e));
+    const mout = this._markerManager.createEventObservable('mouseout', this).subscribe((e: any) => {
+      this.mouseOut.emit(e);
+    });
     this._eventSubscriptions.push(mout);
 
-    const anChng =
-      this._markerManager.createEventObservable<void>('animation_changed', this)
-        .subscribe(() => {
-          this.animationChange.emit(this.animation ?? undefined);
-        });
-    this._eventSubscriptions.push(anChng);
+    const ac = this._markerManager.createEventObservable('animation_changed', this).subscribe(() => {
+      this._markerManager.getNativeMarker(this).then((marker: google.maps.Marker) => {
+        const animation = marker.getAnimation();
+        if (animation !== null) {
+          this.animationChange.emit(animation as unknown as keyof typeof google.maps.Animation);
+        }
+      });
+    });
+    this._eventSubscriptions.push(ac);
   }
 
   /** @internal */
@@ -299,5 +304,6 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit, FitBou
     this._markerManager.deleteMarker(this);
     // unsubscribe all registered observable subscriptions
     this._eventSubscriptions.forEach((s) => s.unsubscribe());
+    this._fitBoundsDetails$.complete();
   }
 }
